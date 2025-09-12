@@ -11,9 +11,14 @@ import (
 
 // Initialize the logger
 // https://dev.to/ronnymedina/golang-logging-configuration-with-zap-practical-implementation-tips-6g7
-func InitLogger(serverId int) *zap.SugaredLogger {
+func InitLogger(Id int, isServer bool) *zap.SugaredLogger {
 
-	fileName := fmt.Sprintf("server_%d.log", serverId)
+	var fileName string
+	if isServer {
+		fileName = fmt.Sprintf("server_%d.log", Id)
+	} else {
+		fileName = fmt.Sprintf("client_%d.log", Id)
+	}
 	logFile, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("Failed to open lof file %s %v", fileName, err)
@@ -25,8 +30,11 @@ func InitLogger(serverId int) *zap.SugaredLogger {
 	fileSync := zapcore.AddSync(logFile)
 
 	core := zapcore.NewCore(encoder, fileSync, zap.DebugLevel)
-
-	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Fields(zap.Int("serverID", serverId)))
-
+	var logger *zap.Logger
+	if isServer {
+		logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Fields(zap.Int("serverID", Id)))
+	} else {
+		logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Fields(zap.Int("clientID", Id)))
+	}
 	return logger.Sugar()
 }

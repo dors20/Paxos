@@ -82,7 +82,7 @@ var logs *zap.SugaredLogger
 
 func startServer(id int, t time.Duration) {
 
-	logs = logger.InitLogger(id)
+	logs = logger.InitLogger(id, true)
 
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
