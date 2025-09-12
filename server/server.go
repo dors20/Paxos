@@ -1,8 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
 	"sync"
 	"time"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // Current Ballot of server
@@ -75,3 +81,63 @@ type ServerImpl struct {
 
 var server *ServerImpl
 var clientManager *ClientImpl
+var loggerMain *zap.Logger
+var logger *zap.SugaredLogger
+
+// https://dev.to/ronnymedina/golang-logging-configuration-with-zap-practical-implementation-tips-6g7
+func initLogger(serverId int) {
+
+	fileName := fmt.Sprintf("server_%d.log", serverId)
+	logFile, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("Failed to open lof file %s %v", fileName, err)
+	}
+
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoder := zapcore.NewJSONEncoder(config)
+	fileSync := zapcore.AddSync(logFile)
+
+	core := zapcore.NewCore(encoder, fileSync, zap.DebugLevel)
+
+	loggerMain = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Fields(zap.Int("serverID", serverId)))
+
+}
+
+func startServer(id int, t time.Duration) {
+
+	initLogger(id)
+	logger = loggerMain.Sugar()
+
+	logger.Debug("Enter")
+	defer logger.Debug("Exit")
+	clientManager = &ClientImpl{
+		clientList: make(map[int]*Client),
+	}
+
+	sm := &StateMachine{
+		vault:                 make(map[string]int),
+		lastExecutedCommitNum: 0,
+		queue:                 make(map[int]*ClientRequestTxn),
+	}
+
+	server = &ServerImpl{
+		id:            id,
+		ballot:        &BallotNumber{ballotVal: 1, serverID: id},
+		seqNum:        0,
+		lastCommitIdx: 0,
+		logs:          make([]*LogRecord, 0),
+		leaderTime:    time.NewTimer(t),
+		stateMachine:  sm,
+	}
+
+	logger.Infof("Server Initialized successfully with serverId: %d and timer duration: %d", id, t)
+}
+
+func main() {
+
+	serverId := 1
+	leaderTimeout := 10 * time.Second
+	startServer(serverId, leaderTimeout)
+	logger.Infof("Server-%d is up and running. Waiting for requests", serverId)
+}
