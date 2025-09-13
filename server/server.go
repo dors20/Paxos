@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
+	"net"
 	"os"
+	"paxos/api"
 	"paxos/constants"
 	"paxos/logger"
 	"strconv"
@@ -10,6 +14,7 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 // Current Ballot of server
@@ -72,6 +77,7 @@ type ServerImpl struct {
 	leaderTime    *time.Timer
 	stateMachine  *StateMachine
 	state         int
+	api.UnimplementedClientServerTxnsServer
 }
 
 // Check for AB lock sequence to avoid deadlock ( Like contentManagger and stateManager issue)
@@ -84,7 +90,7 @@ type ServerImpl struct {
 var server *ServerImpl
 var clientManager *ClientImpl
 var logs *zap.SugaredLogger
-var port int
+var port string
 
 func startServer(id int, t time.Duration) {
 
@@ -130,7 +136,23 @@ func main() {
 
 	leaderTimeout := constants.LEADER_TIMEOUT_SECONDS * time.Second
 	startServer(serverId, leaderTimeout)
-	logs.Infof("Server-%d is up and running. Waiting for requests on port %d", serverId, port)
+	logs.Infof("Server-%d is up and running. Waiting for requests on port %s", serverId, port)
+
+	// Starting grpc server
+	addr := fmt.Sprintf(":%s", port)
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		logs.Fatalf("Failed to listen on port %s: %v", port, err)
+	}
+
+	grpcServer := grpc.NewServer()
+	api.RegisterClientServerTxnsServer(grpcServer, server)
+
+	logs.Infof("gRPC server listening at %s", port)
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		logs.Fatalf("Failed to serve gRPC: %v", err)
+	}
 }
 
 func stateTransition(from int, to int) {
@@ -140,4 +162,24 @@ func stateTransition(from int, to int) {
 
 func isValidStateTransition(from int, to int) {
 	//TODO
+}
+
+func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, error) {
+
+	logs.Debug("Entry")
+	defer logs.Debug("Exit")
+
+	logs.Infof("Received transaction from %s to %s for amount %d", in.Sender, in.Receiver, in.Amount)
+
+	// TODO leader check
+	//
+	reply := &api.Reply{
+		BallotVal: int32(s.ballot.ballotVal),
+		ServerId:  int32(s.id),
+		Timestamp: in.GetTimestamp(),
+		ClientId:  in.GetClientId(),
+		Result:    true, // Assume success for now
+	}
+
+	return reply, nil
 }

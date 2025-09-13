@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "/api";
+
+service ClientServerTxns {
+    rpc Request(Message) returns (Reply);
+}
+
+message Message {
+    string sender = 1;
+    string receiver = 2;
+    int32 amount = 3;
+    int64 timestamp = 4;
+    string clientId = 5;
+}
+
+message Reply {
+    int32 ballotVal = 1;
+    int32 serverId = 2;
+    int64 timestamp = 3;
+    string clientId = 4;
+    bool result = 5;
+}
