@@ -48,6 +48,9 @@ func main() {
 		logs.Infof("Server-%d started successfully with PID: %d", i, serverPid)
 	}
 
+	port := constants.BASE_PORT
+	logs.Infof("Client communications on port %d", port)
+
 	defer func() {
 
 		logs.Info("No test cases to execute. Shutting down all servers")

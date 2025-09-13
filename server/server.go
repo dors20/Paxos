@@ -84,6 +84,7 @@ type ServerImpl struct {
 var server *ServerImpl
 var clientManager *ClientImpl
 var logs *zap.SugaredLogger
+var port int
 
 func startServer(id int, t time.Duration) {
 
@@ -112,7 +113,7 @@ func startServer(id int, t time.Duration) {
 		stateMachine:  sm,
 		state:         constants.Follower,
 	}
-
+	port = constants.ServerPorts[id]
 	logs.Infof("Server Initialized successfully with serverId: %d and timer duration: %d", id, t)
 }
 
@@ -129,7 +130,7 @@ func main() {
 
 	leaderTimeout := constants.LEADER_TIMEOUT_SECONDS * time.Second
 	startServer(serverId, leaderTimeout)
-	logs.Infof("Server-%d is up and running. Waiting for requests", serverId)
+	logs.Infof("Server-%d is up and running. Waiting for requests on port %d", serverId, port)
 }
 
 func stateTransition(from int, to int) {
