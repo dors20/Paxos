@@ -1,7 +1,11 @@
 package main
 
 import (
+	"log"
+	"os"
+	"paxos/constants"
 	"paxos/logger"
+	"strconv"
 	"sync"
 	"time"
 
@@ -67,6 +71,7 @@ type ServerImpl struct {
 	logs          []*LogRecord
 	leaderTime    *time.Timer
 	stateMachine  *StateMachine
+	state         int
 }
 
 // Check for AB lock sequence to avoid deadlock ( Like contentManagger and stateManager issue)
@@ -86,6 +91,7 @@ func startServer(id int, t time.Duration) {
 
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
+
 	clientManager = &ClientImpl{
 		clientList: make(map[int]*Client),
 	}
@@ -104,6 +110,7 @@ func startServer(id int, t time.Duration) {
 		logs:          make([]*LogRecord, 0),
 		leaderTime:    time.NewTimer(t),
 		stateMachine:  sm,
+		state:         constants.Follower,
 	}
 
 	logs.Infof("Server Initialized successfully with serverId: %d and timer duration: %d", id, t)
@@ -111,8 +118,25 @@ func startServer(id int, t time.Duration) {
 
 func main() {
 
-	serverId := 1
-	leaderTimeout := 10 * time.Second
+	if len(os.Args) < 2 {
+		log.Fatalf("Server ID must be provided as a command-line argument")
+	}
+	serverIdString := os.Args[1]
+	serverId, err := strconv.Atoi(serverIdString)
+	if err != nil {
+		log.Fatalf("Invalid Server ID: %s", serverIdString)
+	}
+
+	leaderTimeout := constants.LEADER_TIMEOUT_SECONDS * time.Second
 	startServer(serverId, leaderTimeout)
 	logs.Infof("Server-%d is up and running. Waiting for requests", serverId)
+}
+
+func stateTransition(from int, to int) {
+
+	// TODO
+}
+
+func isValidStateTransition(from int, to int) {
+	//TODO
 }
