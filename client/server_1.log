@@ -1,0 +1,47 @@
+{"level":"debug","ts":"2025-09-14T19:48:18.394Z","caller":"server/server.go:161","msg":"Enter","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:18.394Z","caller":"server/server.go:145","msg":"Start","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:18.394Z","caller":"server/server.go:145","msg":"Exit","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:18.394Z","caller":"server/server.go:161","msg":"Server Initialized successfully with serverId: 1 and timer duration: 10000000000","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:18.394Z","caller":"server/server.go:161","msg":"Exit","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:18.394Z","caller":"runtime/proc.go:285","msg":"Server-1 is up and running. Waiting for requests on port 9111","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:18.395Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9111","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"api/api_grpc.pb.go:79","msg":"Entry","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 50","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:227","msg":"Enter","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:227","msg":"Added record to log with seqNum 1","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:227","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"api/api_grpc.pb.go:79","msg":"Entry","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Bob to Alice for amount 70","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:227","msg":"Enter","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:227","msg":"Added record to log with seqNum 2","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:227","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:228","msg":"Enter","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:228","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:232","msg":"Enter","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:232","msg":"Log with seqNum 2 commited","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:232","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:233","msg":"Enter","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:233","msg":"Exit","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 2 to be executed","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:265","msg":"Start","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:265","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:228","msg":"Enter","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:228","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:232","msg":"Enter","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:232","msg":"Log with seqNum 1 commited","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:232","msg":"Exit","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:233","msg":"Enter","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:233","msg":"Exit","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.406Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 1 to be executed","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.406Z","caller":"server/server.go:265","msg":"Start","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"server/server.go:265","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"server/server.go:265","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.407Z","caller":"server/server.go:265","msg":"Exit","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 2, txn success: true ","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"map[Alice:120 Bob:80]","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"map[1:0x4000132ae0 2:0x4000020280]","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"Exit","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 1, txn success: true ","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"map[Alice:120 Bob:80]","serverID":1}
+{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"map[1:0x4000132ae0 2:0x4000020280]","serverID":1}
+{"level":"debug","ts":"2025-09-14T19:48:28.407Z","caller":"api/api_grpc.pb.go:79","msg":"Exit","serverID":1}

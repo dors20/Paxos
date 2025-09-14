@@ -97,23 +97,50 @@ func run() {
 	defer conn.Close()
 
 	client := api.NewClientServerTxnsClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
+	// Use constant.go request timeout
 
 	logs.Info("Sending transaction: Alice -> Bob, Amount: 10")
-	reply, err := client.Request(ctx, &api.Message{
-		Sender:    "Alice",
-		Receiver:  "Bob",
-		Amount:    10,
-		Timestamp: time.Now().Unix(),
-		ClientId:  "Alice",
-	})
-	if err != nil {
-		logs.Warnf("Failed Request with error : %v", err)
-		return
-		// TODO Implement retry to all nodes
 
-	}
-	logs.Infof("Recieved response with Success: %t and ballotVal: %d", reply.Result, reply.BallotVal)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		reply, err := client.Request(ctx, &api.Message{
+			Sender:    "Alice",
+			Receiver:  "Bob",
+			Amount:    50,
+			Timestamp: time.Now().Unix(),
+			ClientId:  "Alice",
+		})
+		if err != nil {
+			logs.Warnf("Failed Request with error : %v", err)
+			return
+			// TODO Implement retry to all nodes
+
+		} else {
+			logs.Infof("Recieved response with Success: %t and ballotVal: %d", reply.Result, reply.BallotVal)
+		}
+	}()
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+		reply, err := client.Request(ctx, &api.Message{
+			Sender:    "Bob",
+			Receiver:  "Alice",
+			Amount:    70,
+			Timestamp: time.Now().Unix(),
+			ClientId:  "Alice",
+		})
+		if err != nil {
+			logs.Warnf("Failed Request with error : %v", err)
+			return
+			// TODO Implement retry to all nodes
+
+		} else {
+			logs.Infof("Recieved response with Success: %t and ballotVal: %d", reply.Result, reply.BallotVal)
+		}
+
+	}()
+
+	time.Sleep(10 * time.Second)
 
 }
