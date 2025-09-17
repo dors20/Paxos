@@ -35,7 +35,7 @@ type ClientRequestTxn struct {
 // Need to check timestamp before executing a request
 type ClientMessage struct {
 	txn       *ClientRequestTxn
-	timestamp int // TODO change to datetime later
+	timestamp int64 // TODO change to datetime later
 }
 
 // Structure of a single record that will be stored in this servers log
@@ -61,12 +61,9 @@ type StateMachine struct {
 	execPool              chan struct{}
 }
 
-type Response struct{} //TODO
-
 type Client struct {
-	lastRequestTimeStamp int               // TODO make it datetime
-	requestCache         map[int]*Response //TODO create response struct
-
+	lastRequestTimeStamp int64
+	lastResponse         *api.Reply
 }
 
 // maps unique client id to their request and last served timestamp
@@ -104,7 +101,7 @@ Questions to be answered:
 TODO:
 1) Use constant for log level, after project complete
 2) Dynamically set new users balance to 10
-3) In client store connections of servers
+3) In client store connections of servers - Done
 4) In server store connections for other nodes
 6) In client on failure needs to braodcast to all nodes
 */
@@ -125,12 +122,12 @@ func startServer(id int, t time.Duration) {
 		records: make(map[int]*LogRecord),
 	}
 
-	cm := &ClientImpl{
+	cm := &ClientImpl{ // TODO leader forward
 		clientList: make(map[string]*Client),
 	}
 	// TODO Chnage how we assign balance
 	sm = &StateMachine{
-		vault:                 map[string]int{"Alice": 100, "Bob": 100},
+		vault:                 make(map[string]int),
 		lastExecutedCommitNum: 0,
 		executionStatus:       make(map[int]chan bool),
 		execPool:              make(chan struct{}, 1),
@@ -207,6 +204,35 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 	// TODO leader forward
 	// TODO caching client request and request timestamp check
 	// We'll allow self transfer, its a redundant log but the system should handle it like a normal txn
+	// Exact once semantics before the leader check other wise on failed req, all nodes will flood Leader
+	s.clientManager.lock.Lock()
+	client, ok := s.clientManager.clientList[in.ClientId]
+	if !ok {
+		client = &Client{}
+		s.clientManager.clientList[in.ClientId] = client
+		logs.Infof("First request from client %s. Creating client cache", in.ClientId)
+	}
+
+	if in.GetTimestamp() < client.lastRequestTimeStamp {
+		logs.Warnf("Recieved a stale request from client-%s", in.ClientId)
+		s.clientManager.lock.Unlock()
+		return &api.Reply{Result: false, ServerId: int32(s.id), Error: "Invalid stale request"}, nil
+	}
+
+	if in.GetTimestamp() == client.lastRequestTimeStamp {
+		logs.Infof("Recieved duplicate request from client-%s", in.ClientId)
+		resp := client.lastResponse
+		s.clientManager.lock.Unlock()
+		if resp == nil {
+			resp = &api.Reply{Result: false, ServerId: int32(s.id), Error: "Failed to send cached resp"}
+		}
+
+		return resp, nil
+	}
+	client.lastRequestTimeStamp = in.GetTimestamp()
+	client.lastResponse = nil
+	s.clientManager.lock.Unlock()
+
 	s.lock.Lock()
 	if s.state != constants.Leader {
 		logs.Warnf("Cannot process this transaction, not current cluster leader")
@@ -249,14 +275,15 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 		ClientId:  in.GetClientId(),
 		Result:    res,
 	}
-
 	s.lock.Unlock()
-	sm.lock.Lock()
-	logs.Info(sm.vault)
-	sm.lock.Unlock()
-	logStore.lock.Lock()
-	logs.Info(logStore.records)
-	logStore.lock.Unlock()
+
+	s.clientManager.lock.Lock()
+	defer s.clientManager.lock.Unlock()
+	client, ok = s.clientManager.clientList[in.ClientId]
+	if ok && client.lastRequestTimeStamp == in.GetTimestamp() {
+		client.lastResponse = reply
+		logs.Infof("Cached reply for client-%s with request timestamp: %d", in.ClientId, in.GetTimestamp())
+	}
 	return reply, nil
 
 }
@@ -288,11 +315,22 @@ func (sm *StateMachine) execCommitLogs() {
 		if !ok || !logToApply.isCommitted {
 			break
 		}
+		sender := logToApply.txn.sender
+		reciever := logToApply.txn.reciever
+
+		if _, ok := sm.vault[sender]; !ok {
+			sm.vault[sender] = constants.INITIAL_BALANCE
+			logs.Infof("Detected new user, Initializing Balance for User: %s with %d", sender, constants.INITIAL_BALANCE)
+		}
+		if _, ok := sm.vault[reciever]; !ok {
+			sm.vault[reciever] = constants.INITIAL_BALANCE
+			logs.Infof("Detected new user, Initializing Balance for User: %s with %d", reciever, constants.INITIAL_BALANCE)
+		}
 
 		var res bool
-		if sm.vault[logToApply.txn.sender] >= logToApply.txn.amount {
-			sm.vault[logToApply.txn.sender] -= logToApply.txn.amount
-			sm.vault[logToApply.txn.reciever] += logToApply.txn.amount
+		if sm.vault[sender] >= logToApply.txn.amount {
+			sm.vault[sender] -= logToApply.txn.amount
+			sm.vault[reciever] += logToApply.txn.amount
 			res = true
 			logs.Infof("Successfully applied txn with commitIdx %d and segNum %d", nextCommitIdx, logToApply.seqNum)
 		} else {

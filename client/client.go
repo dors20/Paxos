@@ -103,20 +103,17 @@ func run() {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 
-	// Todo store already created connections
-
-	logs.Info("Sending transaction: Alice -> Bob, Amount: 10")
-
 	var wg sync.WaitGroup
-	wg.Add(4)
-	go sm.makeRequest(&wg, "Alice", "Bob", 10, time.Now().Unix())
-	printReqStatus(1, 1)
-	printReqStatus(1, 1)
-	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().Unix())
-	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().Unix())
-	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().Unix())
-	printReqStatus(1, 3)
+	wg.Add(5)
+	t := time.Now().UnixNano()
+	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
+	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
+	// Duplicate request
+	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
 	wg.Wait()
+	printReqStatus(1, 1)
 	printServerStatus(1)
 	logs.Info("All requests completed")
 }
@@ -124,6 +121,8 @@ func run() {
 func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever string, amount int, timestamp int64) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
+
+	logs.Infof("Sending transaction: %s -> %s, Amount: %d at time: %d", sender, reciever, amount, timestamp)
 
 	defer wg.Done()
 
@@ -145,7 +144,11 @@ func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever s
 		logs.Warnf("Failed Request with error : %v", err)
 		// TODO Implement retry to all nodes
 	}
-	logs.Infof("Recieved response with Success: %t and ballotVal: %d", reply.Result, reply.BallotVal)
+	if reply.GetError() != "" {
+		logs.Warnf("Recieved error from server; %s", reply.GetError())
+	} else {
+		logs.Infof("Recieved response with Success: %t and ballotVal: %d", reply.Result, reply.BallotVal)
+	}
 	sm.lock.Lock()
 	if sm.currLeader != int(reply.ServerId) {
 		// TODO Maybe check for range

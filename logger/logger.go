@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"paxos/constants"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -25,11 +26,11 @@ func InitLogger(Id int, isServer bool) *zap.SugaredLogger {
 	}
 
 	config := zap.NewProductionEncoderConfig()
-	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	config.EncodeTime = zapcore.RFC3339NanoTimeEncoder
 	encoder := zapcore.NewJSONEncoder(config)
 	fileSync := zapcore.AddSync(logFile)
 
-	core := zapcore.NewCore(encoder, fileSync, zap.InfoLevel)
+	core := zapcore.NewCore(encoder, fileSync, constants.LOG_LEVEL)
 	var logger *zap.Logger
 	if isServer {
 		logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Fields(zap.Int("serverID", Id)))

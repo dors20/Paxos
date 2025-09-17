@@ -1,5 +1,7 @@
 package constants
 
+import "go.uber.org/zap"
+
 const (
 	Follower = iota
 	Candidate
@@ -18,6 +20,12 @@ const MAX_NODES = 1
 const LEADER_TIMEOUT_SECONDS = 10
 const REQUEST_TIMEOUT = 5
 const BASE_PORT = "9100"
+
+// STATE MACHINE CONFIG
+const INITIAL_BALANCE = 100
+
+// LOGGER
+const LOG_LEVEL = zap.InfoLevel
 
 // Can do base_Port+1
 // Port 9101 - 9110 reserved if we need multiple client instances

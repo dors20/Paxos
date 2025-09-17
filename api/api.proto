@@ -33,6 +33,7 @@ message Reply {
     int64 timestamp = 3;
     string clientId = 4;
     bool result = 5;
+    string error = 6;
 }
 
 message Blank{}
