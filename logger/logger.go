@@ -29,7 +29,7 @@ func InitLogger(Id int, isServer bool) *zap.SugaredLogger {
 	encoder := zapcore.NewJSONEncoder(config)
 	fileSync := zapcore.AddSync(logFile)
 
-	core := zapcore.NewCore(encoder, fileSync, zap.DebugLevel)
+	core := zapcore.NewCore(encoder, fileSync, zap.InfoLevel)
 	var logger *zap.Logger
 	if isServer {
 		logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Fields(zap.Int("serverID", Id)))

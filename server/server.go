@@ -62,8 +62,8 @@ type StateMachine struct {
 type Response struct{} //TODO
 
 type Client struct {
-	lastTimeStampExecuted int               // TODO make it datetime
-	requestCache          map[int]*Response //TODO create response struct
+	lastRequestTimeStamp int               // TODO make it datetime
+	requestCache         map[int]*Response //TODO create response struct
 
 }
 
@@ -103,7 +103,7 @@ TODO:
 2) Dynamically set new users balance to 10
 3) In client store connections of servers
 4) In server store connections for other nodes
-
+6) In client on failure needs to braodcast to all nodes
 */
 
 var server *ServerImpl
@@ -125,7 +125,7 @@ func startServer(id int, t time.Duration) {
 	cm := &ClientImpl{
 		clientList: make(map[string]*Client),
 	}
-
+	// TODO Chnage how we assign balance
 	sm = &StateMachine{
 		vault:                 map[string]int{"Alice": 100, "Bob": 100},
 		lastExecutedCommitNum: 0,
@@ -138,7 +138,7 @@ func startServer(id int, t time.Duration) {
 		ballot:        &BallotNumber{ballotVal: 1, serverID: id},
 		seqNum:        0,
 		leaderTime:    time.NewTimer(t),
-		state:         constants.Leader,
+		state:         constants.Leader, // Change to Leader for testing
 		clientManager: cm,
 	}
 	server.port = constants.ServerPorts[id]

@@ -13,3 +13,17 @@
 {"level":"info","ts":"2025-09-14T19:48:38.406Z","caller":"client/client.go:85","msg":"No test cases to execute. Shutting down all servers","clientID":1}
 {"level":"warn","ts":"2025-09-14T19:48:38.406Z","caller":"client/client.go:85","msg":"Successfully shut down server-1 with PID: 59938","clientID":1}
 {"level":"debug","ts":"2025-09-14T19:48:38.406Z","caller":"runtime/proc.go:285","msg":"Stopping Client","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:10.013Z","caller":"runtime/proc.go:285","msg":"Server Binary built","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:10.014Z","caller":"runtime/proc.go:285","msg":"Server-1 started successfully with PID: 243264","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:10.014Z","caller":"runtime/proc.go:285","msg":"Client communications on port 9100","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:10.014Z","caller":"runtime/proc.go:285","msg":"Waiting for servers to start","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.014Z","caller":"runtime/proc.go:285","msg":"Running test Cases","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.016Z","caller":"client/client.go:96","msg":"Sending transaction: Alice -> Bob, Amount: 10","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.017Z","caller":"client/client.go:126","msg":"Creating server 1 connection for the first time","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.050Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.050Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"client/client.go:96","msg":"All requests completed","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"runtime/proc.go:285","msg":"Completed all test cases","clientID":1}
+{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"client/client.go:100","msg":"No test cases to execute. Shutting down all servers","clientID":1}
+{"level":"warn","ts":"2025-09-17T00:01:12.053Z","caller":"client/client.go:100","msg":"Successfully shut down server-1 with PID: 243264","clientID":1}
