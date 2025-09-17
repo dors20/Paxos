@@ -108,12 +108,16 @@ func run() {
 	logs.Info("Sending transaction: Alice -> Bob, Amount: 10")
 
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(4)
 	go sm.makeRequest(&wg, "Alice", "Bob", 10, time.Now().Unix())
+	printReqStatus(1, 1)
+	printReqStatus(1, 1)
 	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().Unix())
-	go sm.makeRequest(&wg, "Bob", "Alice", 40, time.Now().Unix())
-
+	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().Unix())
+	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().Unix())
+	printReqStatus(1, 3)
 	wg.Wait()
+	printServerStatus(1)
 	logs.Info("All requests completed")
 }
 
@@ -151,6 +155,9 @@ func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever s
 	sm.lock.Unlock()
 }
 
+// Good to have for performance
+// Unlock before creating a new connection because it might take time
+// Reaquire lock and then add it to server map
 func (sm *serversData) getClientServerConn() (api.ClientServerTxnsClient, error) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
@@ -178,4 +185,113 @@ func (sm *serversData) getClientServerConn() (api.ClientServerTxnsClient, error)
 	client := api.NewClientServerTxnsClient(server.conn)
 
 	return client, nil
+}
+
+func (sm *serversData) getConn(serverId int) error {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	server, ok := sm.servers[serverId]
+	if !ok {
+		logs.Warnf("No server with id %d found in server map", serverId)
+		return fmt.Errorf("server with ID %d not found", serverId)
+	}
+
+	if server.conn == nil {
+		logs.Infof("Creating server %d connection for the first time", serverId)
+		// TODO Safety check for bound
+		address := fmt.Sprintf("localhost:%s", constants.ServerPorts[serverId])
+		conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			logs.Fatalf("Could not connect to server %d: %v", serverId, err)
+			return fmt.Errorf("Could not connect to server %d: %v", serverId, err)
+		}
+		server.conn = conn
+	}
+	return nil
+}
+
+func printServerStatus(serverID int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Info("------------------------------------")
+	logs.Info("------------Server State------------")
+
+	sm.lock.Lock()
+
+	server, ok := sm.servers[serverID]
+	if !ok {
+		logs.Warnf("No server info for server-%d found", serverID)
+		return
+	}
+	if server.conn == nil {
+		err := sm.getConn(serverID)
+		if err != nil {
+			logs.Warnf("Failed to create conn for server-%d", serverID)
+			return
+		}
+	}
+	client := api.NewPaxosPrintInfoClient(server.conn)
+	sm.lock.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	// Print DB
+	db, err := client.PrintDB(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("PrintDB failed: %v", err)
+	} else {
+		logs.Infof("Server %d Vault: %v", serverID, db.GetVault())
+	}
+
+	// Print Log
+	logStore, err := client.PrintLog(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("PrintLog failed: %v", err)
+	} else {
+		logs.Infof("Server %d Log:", serverID)
+		for _, entry := range logStore.GetLogs() {
+			logs.Infof("  - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
+		}
+	}
+	logs.Info("-----------------------------------------")
+}
+
+func printReqStatus(serverID, seqNum int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Info("------------------------------------")
+	logs.Info("------------Request State------------")
+
+	sm.lock.Lock()
+
+	server, ok := sm.servers[serverID]
+	if !ok {
+		logs.Warnf("No server info for server-%d found", serverID)
+		return
+	}
+	if server.conn == nil {
+		err := sm.getConn(serverID)
+		if err != nil {
+			logs.Warnf("Failed to create conn for server-%d", serverID)
+			return
+		}
+	}
+	client := api.NewPaxosPrintInfoClient(server.conn)
+	sm.lock.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	status, err := client.PrintStatus(ctx, &api.RequestInfo{SeqNum: int32(seqNum)})
+	if err != nil {
+		logs.Warnf("PrintStatus failed: %v", err)
+	} else {
+		logs.Infof("Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
+	}
+	logs.Info("-----------------------------------------")
+
 }

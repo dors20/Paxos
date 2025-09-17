@@ -1,29 +1,36 @@
-{"level":"debug","ts":"2025-09-14T19:48:17.643Z","caller":"runtime/proc.go:285","msg":"Client Started","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:18.390Z","caller":"runtime/proc.go:285","msg":"Server Binary built","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:18.391Z","caller":"runtime/proc.go:285","msg":"Server-1 started successfully with PID: 59938","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:18.391Z","caller":"runtime/proc.go:285","msg":"Client communications on port 9100","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:18.391Z","caller":"runtime/proc.go:285","msg":"Waiting for servers to start","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:28.400Z","caller":"runtime/proc.go:285","msg":"Running test Cases","clientID":1}
-{"level":"debug","ts":"2025-09-14T19:48:28.400Z","caller":"client/client.go:80","msg":"Enter","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:28.401Z","caller":"client/client.go:80","msg":"Sending transaction: Alice -> Bob, Amount: 10","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:28.407Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
-{"level":"debug","ts":"2025-09-14T19:48:38.405Z","caller":"client/client.go:80","msg":"Exit","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:38.406Z","caller":"runtime/proc.go:285","msg":"Completed all test cases","clientID":1}
-{"level":"info","ts":"2025-09-14T19:48:38.406Z","caller":"client/client.go:85","msg":"No test cases to execute. Shutting down all servers","clientID":1}
-{"level":"warn","ts":"2025-09-14T19:48:38.406Z","caller":"client/client.go:85","msg":"Successfully shut down server-1 with PID: 59938","clientID":1}
-{"level":"debug","ts":"2025-09-14T19:48:38.406Z","caller":"runtime/proc.go:285","msg":"Stopping Client","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:10.013Z","caller":"runtime/proc.go:285","msg":"Server Binary built","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:10.014Z","caller":"runtime/proc.go:285","msg":"Server-1 started successfully with PID: 243264","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:10.014Z","caller":"runtime/proc.go:285","msg":"Client communications on port 9100","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:10.014Z","caller":"runtime/proc.go:285","msg":"Waiting for servers to start","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.014Z","caller":"runtime/proc.go:285","msg":"Running test Cases","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.016Z","caller":"client/client.go:96","msg":"Sending transaction: Alice -> Bob, Amount: 10","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.017Z","caller":"client/client.go:126","msg":"Creating server 1 connection for the first time","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.050Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.050Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"client/client.go:96","msg":"All requests completed","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"runtime/proc.go:285","msg":"Completed all test cases","clientID":1}
-{"level":"info","ts":"2025-09-17T00:01:12.051Z","caller":"client/client.go:100","msg":"No test cases to execute. Shutting down all servers","clientID":1}
-{"level":"warn","ts":"2025-09-17T00:01:12.053Z","caller":"client/client.go:100","msg":"Successfully shut down server-1 with PID: 243264","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:56.242Z","caller":"runtime/proc.go:285","msg":"Server Binary built","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:56.242Z","caller":"runtime/proc.go:285","msg":"Server-1 started successfully with PID: 274224","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:56.242Z","caller":"runtime/proc.go:285","msg":"Client communications on port 9100","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:56.242Z","caller":"runtime/proc.go:285","msg":"Waiting for servers to start","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.243Z","caller":"runtime/proc.go:285","msg":"Running test Cases","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.243Z","caller":"client/client.go:96","msg":"Sending transaction: Alice -> Bob, Amount: 10","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.243Z","caller":"client/client.go:113","msg":"------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.243Z","caller":"client/client.go:113","msg":"------------Request State------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.243Z","caller":"client/client.go:277","msg":"Creating server 1 connection for the first time","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.247Z","caller":"client/client.go:113","msg":"Server 1 Status for Seq #1: NOSTATUS","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.247Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.247Z","caller":"client/client.go:113","msg":"-----------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.247Z","caller":"client/client.go:114","msg":"------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.247Z","caller":"client/client.go:114","msg":"------------Request State------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:114","msg":"Server 1 Status for Seq #1: EXECUTED","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:114","msg":"-----------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:118","msg":"------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:118","msg":"------------Request State------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:118","msg":"Server 1 Status for Seq #3: NOSTATUS","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:118","msg":"-----------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"------------Server State------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"Server 1 Vault: map[Alice:95 Bob:105]","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"Server 1 Log:","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"  - Seq: 1, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 1, serverID: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"  - Seq: 2, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 1, serverID: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"  - Seq: 3, From: Alice, To: Bob, Amt: 30, Committed: true, ballotVal: 1, serverID: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"  - Seq: 4, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 1, serverID: 1","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:120","msg":"-----------------------------------------","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:96","msg":"All requests completed","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"runtime/proc.go:285","msg":"Completed all test cases","clientID":1}
+{"level":"info","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:100","msg":"No test cases to execute. Shutting down all servers","clientID":1}
+{"level":"warn","ts":"2025-09-17T02:21:58.248Z","caller":"client/client.go:100","msg":"Successfully shut down server-1 with PID: 274224","clientID":1}

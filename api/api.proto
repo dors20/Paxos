@@ -8,6 +8,17 @@ service ClientServerTxns {
     rpc Request(Message) returns (Reply);
 }
 
+service PaxosPrintInfo {
+    rpc PrintLog(Blank) returns (Logs);
+
+    rpc PrintDB(Blank) returns (Vault);
+
+    rpc PrintStatus(RequestInfo) returns (Status);
+
+    //TODO after consensus is implemented
+    rpc PrintView(Blank) returns (Blank);
+}
+
 message Message {
     string sender = 1;
     string receiver = 2;
@@ -22,4 +33,39 @@ message Reply {
     int64 timestamp = 3;
     string clientId = 4;
     bool result = 5;
+}
+
+message Blank{}
+
+message LogRecord {
+    int32 seqNum = 1;
+    int32 ballotVal = 2;
+    int32 serverId = 3;
+    string sender = 4;
+    string receiver = 5;
+    int32 amount = 6;
+    bool isCommitted = 7;
+}
+
+message Logs {
+    repeated LogRecord logs = 1;
+}
+
+message Vault {
+    map<string, int32> vault =1;
+}
+
+message RequestInfo {
+    int32 seqNum = 1;
+}
+
+enum TxnState {
+    NOSTATUS = 0;
+    ACCEPTED = 1;
+    COMMITTED = 2;
+    EXECUTED = 3;
+}
+
+message Status {
+    TxnState status = 1;
 }

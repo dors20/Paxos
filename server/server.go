@@ -9,6 +9,7 @@ import (
 	"paxos/api"
 	"paxos/constants"
 	"paxos/logger"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -43,6 +44,7 @@ type LogRecord struct {
 	ballot      *BallotNumber
 	txn         *ClientRequestTxn
 	isCommitted bool
+	isExecuted  bool
 }
 
 type LogStore struct {
@@ -84,6 +86,7 @@ type ServerImpl struct {
 	clientManager *ClientImpl
 	port          string
 	api.UnimplementedClientServerTxnsServer
+	api.UnimplementedPaxosPrintInfoServer
 }
 
 /*
@@ -170,7 +173,8 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	api.RegisterClientServerTxnsServer(grpcServer, server)
-
+	// TODO MAYBE DEDICATED SERVER FOR PRINT
+	api.RegisterPaxosPrintInfoServer(grpcServer, server)
 	logs.Infof("gRPC server listening at %s", server.port)
 	err = grpcServer.Serve(lis)
 	if err != nil {
@@ -201,7 +205,8 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 	logs.Infof("Received transaction from %s to %s for amount %d", in.Sender, in.Receiver, in.Amount)
 
 	// TODO leader forward
-	// TODO caching client reuest and request timestamp check
+	// TODO caching client request and request timestamp check
+	// We'll allow self transfer, its a redundant log but the system should handle it like a normal txn
 	s.lock.Lock()
 	if s.state != constants.Leader {
 		logs.Warnf("Cannot process this transaction, not current cluster leader")
@@ -294,6 +299,7 @@ func (sm *StateMachine) execCommitLogs() {
 			logs.Warnf("Insufficient Balance for txn with commitIdx %d and segNum %d", nextCommitIdx, logToApply.seqNum)
 		}
 		sm.lastExecutedCommitNum++
+		logToApply.isExecuted = true
 		execChan, ok := sm.executionStatus[logToApply.seqNum]
 		if ok {
 			execChan <- res
@@ -353,4 +359,68 @@ func (sm *StateMachine) applyTxn() {
 	default:
 	}
 
+}
+
+func (s *ServerImpl) PrintLog(ctx context.Context, in *api.Blank) (*api.Logs, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logStore.lock.Lock()
+	defer logStore.lock.Unlock()
+
+	keys := make([]int, 0, len(logStore.records))
+	for k := range logStore.records {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+
+	entries := make([]*api.LogRecord, 0, len(logStore.records))
+	for _, seqNum := range keys {
+		record := logStore.records[seqNum]
+		entry := &api.LogRecord{
+			SeqNum:      int32(record.seqNum),
+			BallotVal:   int32(record.ballot.ballotVal),
+			ServerId:    int32(record.ballot.serverID),
+			Sender:      record.txn.sender,
+			Receiver:    record.txn.reciever,
+			Amount:      int32(record.txn.amount),
+			IsCommitted: record.isCommitted,
+		}
+		entries = append(entries, entry)
+	}
+	return &api.Logs{Logs: entries}, nil
+}
+
+func (s *ServerImpl) PrintDB(ctx context.Context, in *api.Blank) (*api.Vault, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	sm.lock.Lock()
+	defer sm.lock.Unlock()
+
+	vaultCopy := make(map[string]int32)
+	for k, v := range sm.vault {
+		vaultCopy[k] = int32(v)
+	}
+	return &api.Vault{Vault: vaultCopy}, nil
+}
+
+func (s *ServerImpl) PrintStatus(ctx context.Context, in *api.RequestInfo) (*api.Status, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	seqNum := int(in.GetSeqNum())
+	logStore.lock.Lock()
+	defer logStore.lock.Unlock()
+	record, ok := logStore.records[seqNum]
+	if !ok {
+		return &api.Status{Status: api.TxnState_NOSTATUS}, nil
+	}
+	if record.isExecuted {
+		return &api.Status{Status: api.TxnState_EXECUTED}, nil
+	}
+	if record.isCommitted {
+		return &api.Status{Status: api.TxnState_COMMITTED}, nil
+	}
+	return &api.Status{Status: api.TxnState_ACCEPTED}, nil
 }

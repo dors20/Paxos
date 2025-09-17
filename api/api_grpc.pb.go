@@ -8,6 +8,7 @@ package api
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -98,6 +99,202 @@ var ClientServerTxns_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Request",
 			Handler:    _ClientServerTxns_Request_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/api.proto",
+}
+
+// PaxosPrintInfoClient is the client API for PaxosPrintInfo service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type PaxosPrintInfoClient interface {
+	PrintLog(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Logs, error)
+	PrintDB(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Vault, error)
+	PrintStatus(ctx context.Context, in *RequestInfo, opts ...grpc.CallOption) (*Status, error)
+	// TODO after consensus is implemented
+	PrintView(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error)
+}
+
+type paxosPrintInfoClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPaxosPrintInfoClient(cc grpc.ClientConnInterface) PaxosPrintInfoClient {
+	return &paxosPrintInfoClient{cc}
+}
+
+func (c *paxosPrintInfoClient) PrintLog(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Logs, error) {
+	out := new(Logs)
+	err := c.cc.Invoke(ctx, "/api.PaxosPrintInfo/PrintLog", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paxosPrintInfoClient) PrintDB(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Vault, error) {
+	out := new(Vault)
+	err := c.cc.Invoke(ctx, "/api.PaxosPrintInfo/PrintDB", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paxosPrintInfoClient) PrintStatus(ctx context.Context, in *RequestInfo, opts ...grpc.CallOption) (*Status, error) {
+	out := new(Status)
+	err := c.cc.Invoke(ctx, "/api.PaxosPrintInfo/PrintStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paxosPrintInfoClient) PrintView(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error) {
+	out := new(Blank)
+	err := c.cc.Invoke(ctx, "/api.PaxosPrintInfo/PrintView", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PaxosPrintInfoServer is the server API for PaxosPrintInfo service.
+// All implementations must embed UnimplementedPaxosPrintInfoServer
+// for forward compatibility
+type PaxosPrintInfoServer interface {
+	PrintLog(context.Context, *Blank) (*Logs, error)
+	PrintDB(context.Context, *Blank) (*Vault, error)
+	PrintStatus(context.Context, *RequestInfo) (*Status, error)
+	// TODO after consensus is implemented
+	PrintView(context.Context, *Blank) (*Blank, error)
+	mustEmbedUnimplementedPaxosPrintInfoServer()
+}
+
+// UnimplementedPaxosPrintInfoServer must be embedded to have forward compatible implementations.
+type UnimplementedPaxosPrintInfoServer struct {
+}
+
+func (UnimplementedPaxosPrintInfoServer) PrintLog(context.Context, *Blank) (*Logs, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintLog not implemented")
+}
+func (UnimplementedPaxosPrintInfoServer) PrintDB(context.Context, *Blank) (*Vault, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintDB not implemented")
+}
+func (UnimplementedPaxosPrintInfoServer) PrintStatus(context.Context, *RequestInfo) (*Status, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintStatus not implemented")
+}
+func (UnimplementedPaxosPrintInfoServer) PrintView(context.Context, *Blank) (*Blank, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintView not implemented")
+}
+func (UnimplementedPaxosPrintInfoServer) mustEmbedUnimplementedPaxosPrintInfoServer() {}
+
+// UnsafePaxosPrintInfoServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PaxosPrintInfoServer will
+// result in compilation errors.
+type UnsafePaxosPrintInfoServer interface {
+	mustEmbedUnimplementedPaxosPrintInfoServer()
+}
+
+func RegisterPaxosPrintInfoServer(s grpc.ServiceRegistrar, srv PaxosPrintInfoServer) {
+	s.RegisterService(&PaxosPrintInfo_ServiceDesc, srv)
+}
+
+func _PaxosPrintInfo_PrintLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Blank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaxosPrintInfoServer).PrintLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PaxosPrintInfo/PrintLog",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaxosPrintInfoServer).PrintLog(ctx, req.(*Blank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaxosPrintInfo_PrintDB_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Blank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaxosPrintInfoServer).PrintDB(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PaxosPrintInfo/PrintDB",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaxosPrintInfoServer).PrintDB(ctx, req.(*Blank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaxosPrintInfo_PrintStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaxosPrintInfoServer).PrintStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PaxosPrintInfo/PrintStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaxosPrintInfoServer).PrintStatus(ctx, req.(*RequestInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaxosPrintInfo_PrintView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Blank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaxosPrintInfoServer).PrintView(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PaxosPrintInfo/PrintView",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaxosPrintInfoServer).PrintView(ctx, req.(*Blank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// PaxosPrintInfo_ServiceDesc is the grpc.ServiceDesc for PaxosPrintInfo service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PaxosPrintInfo_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "api.PaxosPrintInfo",
+	HandlerType: (*PaxosPrintInfoServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "PrintLog",
+			Handler:    _PaxosPrintInfo_PrintLog_Handler,
+		},
+		{
+			MethodName: "PrintDB",
+			Handler:    _PaxosPrintInfo_PrintDB_Handler,
+		},
+		{
+			MethodName: "PrintStatus",
+			Handler:    _PaxosPrintInfo_PrintStatus_Handler,
+		},
+		{
+			MethodName: "PrintView",
+			Handler:    _PaxosPrintInfo_PrintView_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
