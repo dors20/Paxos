@@ -12,10 +12,12 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Current Ballot of server
@@ -35,7 +37,7 @@ type ClientRequestTxn struct {
 // Need to check timestamp before executing a request
 type ClientMessage struct {
 	txn       *ClientRequestTxn
-	timestamp int64 // TODO change to datetime later
+	timestamp int64
 }
 
 // Structure of a single record that will be stored in this servers log
@@ -72,6 +74,17 @@ type ClientImpl struct {
 	clientList map[string]*Client
 }
 
+type Peer struct {
+	id   int
+	conn *grpc.ClientConn
+	api  api.PaxosReplicationClient
+}
+
+type PeerManager struct {
+	lock  sync.Mutex
+	peers map[int]*Peer
+}
+
 // The main server struct
 type ServerImpl struct {
 	lock          sync.Mutex
@@ -81,9 +94,12 @@ type ServerImpl struct {
 	leaderTime    *time.Timer
 	state         int
 	clientManager *ClientImpl
+	peerManager   *PeerManager
 	port          string
+	leaderBallot  *BallotNumber
 	api.UnimplementedClientServerTxnsServer
 	api.UnimplementedPaxosPrintInfoServer
+	api.UnimplementedPaxosReplicationServer
 }
 
 /*
@@ -97,12 +113,10 @@ Questions to be answered:
 			follower doesn't accept the log do we need to wait for the RPC to timeout(not ideal)
     	3. If a txn sender balance less than amt do we still commit transaction and only respond as failed?
 		4. In normal flow if state transitions, from leader to anything else what happens to current reqs being processed
-
+		5. Blind trust commit if accept fails check /fall25/cse535/cft-dors20/runs/Commit_before_Accept
 TODO:
-1) Use constant for log level, after project complete
-2) Dynamically set new users balance to 10
 3) In client store connections of servers - Done
-4) In server store connections for other nodes
+4) In server store connections for other nodes - Done
 6) In client on failure needs to braodcast to all nodes
 */
 
@@ -122,10 +136,10 @@ func startServer(id int, t time.Duration) {
 		records: make(map[int]*LogRecord),
 	}
 
-	cm := &ClientImpl{ // TODO leader forward
+	cm := &ClientImpl{
 		clientList: make(map[string]*Client),
 	}
-	// TODO Chnage how we assign balance
+
 	sm = &StateMachine{
 		vault:                 make(map[string]int),
 		lastExecutedCommitNum: 0,
@@ -133,15 +147,27 @@ func startServer(id int, t time.Duration) {
 		execPool:              make(chan struct{}, 1),
 	}
 
+	pm := &PeerManager{
+		peers: make(map[int]*Peer),
+	}
+	// TODO remove after implementing leader election
+	s := constants.Follower
+	if id == 1 {
+		s = constants.Leader
+	}
+
 	server = &ServerImpl{
 		id:            id,
 		ballot:        &BallotNumber{ballotVal: 1, serverID: id},
 		seqNum:        0,
 		leaderTime:    time.NewTimer(t),
-		state:         constants.Leader, // Change to Leader for testing
+		state:         s, // TODO: Default state should be follower , Change to Leader for testing
 		clientManager: cm,
+		peerManager:   pm,
+		leaderBallot:  &BallotNumber{ballotVal: 0, serverID: id}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
 	}
 	server.port = constants.ServerPorts[id]
+	server.peerManager.initPeerConnections(server.id) // Note - not doing as a singleton on becoming first time leader for simplicity
 	sm.startExec()
 	logs.Infof("Server Initialized successfully with serverId: %d and timer duration: %d", id, t)
 }
@@ -172,6 +198,7 @@ func main() {
 	api.RegisterClientServerTxnsServer(grpcServer, server)
 	// TODO MAYBE DEDICATED SERVER FOR PRINT
 	api.RegisterPaxosPrintInfoServer(grpcServer, server)
+	api.RegisterPaxosReplicationServer(grpcServer, server)
 	logs.Infof("gRPC server listening at %s", server.port)
 	err = grpcServer.Serve(lis)
 	if err != nil {
@@ -189,9 +216,11 @@ func isValidStateTransition(from int, to int) {
 }
 
 /*
+	NOTE
 	txn in a , b , c
 	lets say concensus for a take a while b,c committed but not executed
 	we need to wait for a to commit
+	Thats why implementing a channel that gets a pulse everytime we commit a txn, then we check if the prev reqs are committed, otherwise we wait for next pulse
 */
 
 func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, error) {
@@ -202,9 +231,11 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 	logs.Infof("Received transaction from %s to %s for amount %d", in.Sender, in.Receiver, in.Amount)
 
 	// TODO leader forward
-	// TODO caching client request and request timestamp check
+	// *NOTE*
 	// We'll allow self transfer, its a redundant log but the system should handle it like a normal txn
 	// Exact once semantics before the leader check other wise on failed req, all nodes will flood Leader
+	// Changed exactly once semantics from lastReply to lastReq because of one observed duplicated exec
+	// Scenario is if client sends a req and the req takes too long to process because of network delay and the client retries, then both the reqs can be executed
 	s.clientManager.lock.Lock()
 	client, ok := s.clientManager.clientList[in.ClientId]
 	if !ok {
@@ -252,16 +283,26 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 		},
 		isCommitted: false,
 	}
-	// need to unlock here otherwise we are doing sequential processing
+	// NOTE - need to unlock here otherwise we are doing sequential processing
 	s.lock.Unlock()
 
 	logStore.append(record)
 	execChannel := sm.registerSignal(currSeqNum)
 
-	// TODO Concesus PRC HERE
+	// TODO Can make this a server.Qourun const - Good to have
+	quorum := int((constants.MAX_NODES / 2) + 1)
+
+	ok = false
+	// *REVIEW* Do we want an Infinite for LOOP
+	// TODO NEED to Handle on follower side, if its already accepted this message then it should still reply
+	// Need to check if this server is still leader and if not we need to insert no-op in that log index
+	for !ok {
+		ok = s.peerManager.broadcastAccept(quorum, record, in.GetTimestamp())
+	}
 
 	logStore.markCommitted(currSeqNum)
 	sm.applyTxn()
+	s.peerManager.broadcastCommit(record)
 
 	logs.Infof("Waiting for seqNum %d to be executed", currSeqNum)
 	res := <-execChannel
@@ -461,4 +502,194 @@ func (s *ServerImpl) PrintStatus(ctx context.Context, in *api.RequestInfo) (*api
 		return &api.Status{Status: api.TxnState_COMMITTED}, nil
 	}
 	return &api.Status{Status: api.TxnState_ACCEPTED}, nil
+}
+
+func (pm *PeerManager) initPeerConnections(currServer int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	pm.lock.Lock()
+	defer pm.lock.Unlock()
+
+	for serverId := 1; serverId <= constants.MAX_NODES; serverId++ {
+		if serverId == currServer {
+			continue
+		}
+
+		addr := fmt.Sprintf("localhost:%s", constants.ServerPorts[serverId])
+		conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			logs.Warnf("failed to create connection to server %d: %v", serverId, err) // *NOTE* Not using Fatal , we can treat this as a non byzantine problem
+		}
+		// TODO also api.Leader Election clients
+		client := api.NewPaxosReplicationClient(conn)
+		pm.peers[serverId] = &Peer{
+			id:   serverId,
+			conn: conn,
+			api:  client,
+		}
+		logs.Infof("Successfully created connections for server-%d", serverId)
+	}
+}
+
+func (pm *PeerManager) broadcastAccept(quoram int, record *LogRecord, timestamp int64) bool {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	var acceptedVotes int32 = 1
+	qourumChan := make(chan bool, 1)
+	apiRecord := &api.LogRecord{
+		SeqNum:    int32(record.seqNum),
+		BallotVal: int32(record.ballot.ballotVal),
+		ServerId:  int32(record.ballot.serverID),
+		Sender:    record.txn.sender,
+		Receiver:  record.txn.reciever,
+		Amount:    int32(record.txn.amount),
+		Timestamp: timestamp,
+	}
+
+	for _, peer := range pm.peers {
+		go func(p *Peer) {
+			// *NOTE* Not using peer manager lock because fetching conn is a read-only operation
+			// We never create/edit conn after its created for the firsts time, which is sequentials
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+			defer cancel()
+			resp, err := p.api.Accept(ctx, apiRecord)
+			if err != nil {
+				logs.Warnf("Failed to send accpet rpc to server-%d with error %v", peer.id, err)
+				return
+			}
+			// TODO to check the resp for a different ballot or different message
+			if resp.Success {
+				if atomic.AddInt32(&acceptedVotes, 1) == int32(quoram) {
+					select {
+					case qourumChan <- true:
+					default:
+					}
+				}
+			}
+		}(peer)
+	}
+
+	select {
+	case <-qourumChan:
+		logs.Infof("Qouram achieved for seqNum %d", record.seqNum)
+		return true
+	case <-time.After(constants.REQUEST_TIMEOUT * time.Second):
+		logs.Warnf("Quorum not achieved for seqNum %d. Timed out. Recieved voted %d, needed %d", record.seqNum, acceptedVotes, quoram)
+		return false
+	}
+
+}
+
+func (pm *PeerManager) broadcastCommit(record *LogRecord) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	apiRecord := &api.LogRecord{
+		SeqNum:    int32(record.seqNum),
+		BallotVal: int32(record.ballot.ballotVal),
+		ServerId:  int32(record.ballot.serverID),
+		Sender:    record.txn.sender,
+		Receiver:  record.txn.reciever,
+		Amount:    int32(record.txn.amount),
+	}
+
+	for _, peer := range pm.peers {
+		go func(p *Peer) {
+			// *NOTE* Not using peer manager lock because fetching conn is a read-only operation
+			// We never create/edit conn after its created for the firsts time, which is sequential
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+			defer cancel()
+			_, err := p.api.Commit(ctx, apiRecord)
+			if err != nil {
+				logs.Warnf("Failed to send commit rpc to server-%d with error %v", peer.id, err)
+				return
+			}
+		}(peer)
+	}
+
+}
+
+func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.AcceptResp, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Infof("Recieved accept RPC from Server-%d with ballot <%d, %d> for seqNum: #%d, with client txn <%s,%s,%d,%d>", in.GetServerId(), in.GetBallotVal(), in.GetServerId(), in.GetSeqNum(), in.GetSender(), in.GetReceiver(), in.GetAmount(), in.GetTimestamp())
+
+	s.lock.Lock()
+	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
+		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		return &api.AcceptResp{Success: false}, nil
+	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
+		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		return &api.AcceptResp{Success: false}, nil
+	}
+	s.leaderBallot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)}
+	s.lock.Unlock()
+
+	record := &LogRecord{
+		seqNum: int(in.SeqNum), // What if it over writes server's some log???? *TODO* Check for consistency
+		ballot: &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)},
+		txn: &ClientRequestTxn{
+			sender:   in.Sender,
+			reciever: in.Receiver,
+			amount:   int(in.Amount),
+		},
+		isCommitted: false,
+	}
+	// **Check** Do I need to add to log or just add  the commited log??????
+	logStore.append(record)
+	return &api.AcceptResp{
+		Record:  in,
+		NodeID:  int32(s.id),
+		Success: true,
+	}, nil
+}
+
+func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Infof("Recieved commit RPC from Server-%d with ballot <%d, %d> for seqNum: #%d, with client txn <%s,%s,%d,%d>", in.GetServerId(), in.GetBallotVal(), in.GetServerId(), in.GetSeqNum(), in.GetSender(), in.GetReceiver(), in.GetAmount(), in.GetTimestamp())
+
+	s.lock.Lock()
+	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
+		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		return &api.Blank{}, nil
+	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
+		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		return &api.Blank{}, nil
+	}
+	s.leaderBallot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)}
+	s.lock.Unlock()
+	// Note: in runs/Commit_Before_Accept we recieved a commit message before the accept message. current
+	// hangling leaves a permanent hole that can't be repaired until a new-view message that makes this node faulty
+	// halting future commit messages from being executed
+	// We can blindly trust a commit message, Doing that Bellow
+	logStore.lock.Lock()
+
+	seqNum := int(in.GetSeqNum())
+	record, ok := logStore.records[seqNum]
+	if !ok {
+		// If the log entry doesn't exist, the Accept was likely missed.
+		// Since a Commit proves quorum was met, we can safely create the entry.
+		logs.Warnf("Commit received for seqNum #%d before Accept. Creating log entry.", seqNum)
+		record = &LogRecord{
+			seqNum: seqNum,
+			ballot: &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)},
+			txn: &ClientRequestTxn{
+				sender:   in.Sender,
+				reciever: in.Receiver,
+				amount:   int(in.Amount),
+			},
+		}
+		logStore.records[seqNum] = record
+	}
+	record.isCommitted = true
+	logStore.lock.Unlock()
+
+	sm.applyTxn()
+
+	return &api.Blank{}, nil
 }

@@ -1,31 +1,41 @@
-{"level":"info","ts":"2025-09-17T23:06:22.867035763Z","caller":"server/server.go:161","msg":"Server Initialized successfully with serverId: 1 and timer duration: 10000000000","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:22.867096642Z","caller":"runtime/proc.go:285","msg":"Server-1 is up and running. Waiting for requests on port 9111","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:22.868419224Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9111","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876287705Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 10","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876391879Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client Alice. Creating client cache","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876403879Z","caller":"server/server.go:258","msg":"Added record to log with seqNum 1","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876430589Z","caller":"server/server.go:263","msg":"Log with seqNum 1 commited","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.87644009Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 1 to be executed","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876319832Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 25","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876359252Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Bob to Alice for amount 60","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876462675Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client Bob. Creating client cache","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876449215Z","caller":"server/server.go:258","msg":"Added record to log with seqNum 2","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876481842Z","caller":"server/server.go:263","msg":"Log with seqNum 2 commited","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876508844Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 2 to be executed","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876354876Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 10","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.87653072Z","caller":"server/server.go:297","msg":"Detected new user, Initializing Balance for User: Alice with 100","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876537054Z","caller":"server/server.go:297","msg":"Detected new user, Initializing Balance for User: Bob with 100","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876542596Z","caller":"server/server.go:297","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876547471Z","caller":"server/server.go:297","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876552847Z","caller":"server/server.go:258","msg":"Added record to log with seqNum 3","serverID":1}
-{"level":"warn","ts":"2025-09-17T23:06:24.876529137Z","caller":"api/api_grpc.pb.go:79","msg":"Recieved a stale request from client-Alice","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876558305Z","caller":"server/server.go:263","msg":"Log with seqNum 3 commited","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876565973Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 3 to be executed","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876573473Z","caller":"server/server.go:297","msg":"Successfully applied txn with commitIdx 3 and segNum 3","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876578432Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 3, txn success: true ","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876587599Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-%s with request timestamp: %dBob1758150384865392532","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876597308Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 1, txn success: true ","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876650478Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 2, txn success: true ","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876349334Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 30","serverID":1}
-{"level":"info","ts":"2025-09-17T23:06:24.876656937Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-%s with request timestamp: %dAlice1758150384865394198","serverID":1}
-{"level":"warn","ts":"2025-09-17T23:06:24.876672354Z","caller":"api/api_grpc.pb.go:79","msg":"Recieved a stale request from client-Alice","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:44.916685088Z","caller":"server/server.go:170","msg":"Successfully created connections for server-2","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:44.916882131Z","caller":"server/server.go:170","msg":"Successfully created connections for server-3","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:44.917041091Z","caller":"server/server.go:187","msg":"Server Initialized successfully with serverId: 1 and timer duration: 10000000000","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:44.917070633Z","caller":"runtime/proc.go:285","msg":"Server-1 is up and running. Waiting for requests on port 9111","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:44.922776269Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9111","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916009797Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 10","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916088173Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client Alice. Creating client cache","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916070631Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Bob to Alice for amount 60","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916107048Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client Bob. Creating client cache","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.91609809Z","caller":"server/server.go:289","msg":"Added record to log with seqNum 1","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916127423Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 10","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916141215Z","caller":"api/api_grpc.pb.go:79","msg":"Recieved duplicate request from client-Alice","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916212133Z","caller":"server/server.go:289","msg":"Added record to log with seqNum 2","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916247216Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 30","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916254383Z","caller":"server/server.go:289","msg":"Added record to log with seqNum 3","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916279508Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 25","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.916285008Z","caller":"server/server.go:289","msg":"Added record to log with seqNum 4","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.92150664Z","caller":"server/server.go:300","msg":"Qouram achieved for seqNum 1","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.921527974Z","caller":"server/server.go:303","msg":"Log with seqNum 1 commited","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.921540391Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 1 to be executed","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.921595558Z","caller":"server/server.go:338","msg":"Detected new user, Initializing Balance for User: Alice with 100","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.921604016Z","caller":"server/server.go:338","msg":"Detected new user, Initializing Balance for User: Bob with 100","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.921607975Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.921618683Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 1, txn success: true ","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922536525Z","caller":"server/server.go:300","msg":"Qouram achieved for seqNum 2","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.92254565Z","caller":"server/server.go:303","msg":"Log with seqNum 2 commited","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922551567Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 2 to be executed","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922595609Z","caller":"server/server.go:300","msg":"Qouram achieved for seqNum 4","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922623984Z","caller":"server/server.go:303","msg":"Log with seqNum 4 commited","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922626734Z","caller":"server/server.go:300","msg":"Qouram achieved for seqNum 3","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922632776Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 4 to be executed","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922636651Z","caller":"server/server.go:303","msg":"Log with seqNum 3 commited","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922642401Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 3 to be executed","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922663943Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922669151Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 3 and segNum 3","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922672776Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 4 and segNum 4","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922676235Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 4, txn success: true ","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922681151Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-Alice with request timestamp: 1758250246909464320","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922726777Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 2, txn success: true ","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922736902Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-Bob with request timestamp: 1758250246909463486","serverID":1}
+{"level":"info","ts":"2025-09-19T02:50:46.922812153Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 3, txn success: true ","serverID":1}

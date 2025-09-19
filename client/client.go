@@ -34,8 +34,6 @@ var logs *zap.SugaredLogger
 var port string
 var sm *serversData
 
-// TODO Launch servers in for loop and pass server with ids for them to set
-
 func main() {
 	logs = logger.InitLogger(1, false)
 	logs.Debug("Client Started")
@@ -113,8 +111,11 @@ func run() {
 	// Duplicate request
 	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
 	wg.Wait()
+	time.Sleep(time.Second)
 	printReqStatus(1, 1)
 	printServerStatus(1)
+	printServerStatus(2)
+	printServerStatus(3)
 	logs.Info("All requests completed")
 }
 
@@ -130,8 +131,8 @@ func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever s
 	if err != nil {
 		return
 	}
-	// TODO Use constant.go request timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*constants.REQUEST_TIMEOUT)
 	defer cancel()
 	reply, err := conn.Request(ctx, &api.Message{
 		Sender:    sender,
@@ -143,6 +144,10 @@ func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever s
 	if err != nil {
 		logs.Warnf("Failed Request with error : %v", err)
 		// TODO Implement retry to all nodes
+	}
+	if reply == nil {
+		logs.Warnf("Received a nil reply from the server without an error.")
+		return
 	}
 	if reply.GetError() != "" {
 		logs.Warnf("Recieved error from server; %s", reply.GetError())
@@ -238,7 +243,7 @@ func printServerStatus(serverID int) {
 	client := api.NewPaxosPrintInfoClient(server.conn)
 	sm.lock.Unlock()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	// Print DB
@@ -286,7 +291,7 @@ func printReqStatus(serverID, seqNum int) {
 	client := api.NewPaxosPrintInfoClient(server.conn)
 	sm.lock.Unlock()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	status, err := client.PrintStatus(ctx, &api.RequestInfo{SeqNum: int32(seqNum)})

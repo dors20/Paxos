@@ -8,6 +8,11 @@ service ClientServerTxns {
     rpc Request(Message) returns (Reply);
 }
 
+service PaxosReplication {
+    rpc Accept(LogRecord) returns (AcceptResp);
+    rpc Commit(LogRecord) returns (Blank);
+}
+
 service PaxosPrintInfo {
     rpc PrintLog(Blank) returns (Logs);
 
@@ -36,6 +41,13 @@ message Reply {
     string error = 6;
 }
 
+
+message AcceptResp {
+    LogRecord record =1;
+    int32 nodeID = 2;
+    bool success = 3;
+}
+
 message Blank{}
 
 message LogRecord {
@@ -46,6 +58,7 @@ message LogRecord {
     string receiver = 5;
     int32 amount = 6;
     bool isCommitted = 7;
+    int64 timestamp = 8;
 }
 
 message Logs {

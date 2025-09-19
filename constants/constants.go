@@ -14,15 +14,15 @@ const (
 
 // SYSTEM CONFIG
 const MAX_CLIENTS = 10
-const MAX_NODES = 1
+const MAX_NODES = 3
 
 // NETWORK CONFIG
 const LEADER_TIMEOUT_SECONDS = 10
-const REQUEST_TIMEOUT = 5
+const REQUEST_TIMEOUT = 10 // TODO Set appropriate timeouts
 const BASE_PORT = "9100"
 
 // STATE MACHINE CONFIG
-const INITIAL_BALANCE = 100
+const INITIAL_BALANCE = 100 // TODO spec mentions 10, using 100 for now easier to analyze logs
 
 // LOGGER
 const LOG_LEVEL = zap.InfoLevel
