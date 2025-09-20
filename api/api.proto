@@ -11,6 +11,8 @@ service ClientServerTxns {
 service PaxosReplication {
     rpc Accept(LogRecord) returns (AcceptResp);
     rpc Commit(LogRecord) returns (Blank);
+    rpc Prepare(PrepareReq) returns (PromiseResp);
+    rpc NewView(NewViewReq) returns (Blank);
 }
 
 service PaxosPrintInfo {
@@ -82,4 +84,22 @@ enum TxnState {
 
 message Status {
     TxnState status = 1;
+}
+
+message PrepareReq {
+    int32 ballotVal = 1;
+    int32 serverId = 2;
+}
+
+message PromiseResp {
+    int32 ballotVal = 1;
+    int32 serverId = 2; 
+    bool success = 3;
+    repeated LogRecord acceptLog = 4; 
+}
+
+message NewViewReq {
+    int32 ballotVal = 1;
+    int32 serverId = 2; 
+    repeated LogRecord acceptLog = 3; 
 }

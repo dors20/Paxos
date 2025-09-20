@@ -110,6 +110,8 @@ var ClientServerTxns_ServiceDesc = grpc.ServiceDesc{
 type PaxosReplicationClient interface {
 	Accept(ctx context.Context, in *LogRecord, opts ...grpc.CallOption) (*AcceptResp, error)
 	Commit(ctx context.Context, in *LogRecord, opts ...grpc.CallOption) (*Blank, error)
+	Prepare(ctx context.Context, in *PrepareReq, opts ...grpc.CallOption) (*PromiseResp, error)
+	NewView(ctx context.Context, in *NewViewReq, opts ...grpc.CallOption) (*Blank, error)
 }
 
 type paxosReplicationClient struct {
@@ -138,12 +140,32 @@ func (c *paxosReplicationClient) Commit(ctx context.Context, in *LogRecord, opts
 	return out, nil
 }
 
+func (c *paxosReplicationClient) Prepare(ctx context.Context, in *PrepareReq, opts ...grpc.CallOption) (*PromiseResp, error) {
+	out := new(PromiseResp)
+	err := c.cc.Invoke(ctx, "/api.PaxosReplication/Prepare", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paxosReplicationClient) NewView(ctx context.Context, in *NewViewReq, opts ...grpc.CallOption) (*Blank, error) {
+	out := new(Blank)
+	err := c.cc.Invoke(ctx, "/api.PaxosReplication/NewView", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PaxosReplicationServer is the server API for PaxosReplication service.
 // All implementations must embed UnimplementedPaxosReplicationServer
 // for forward compatibility
 type PaxosReplicationServer interface {
 	Accept(context.Context, *LogRecord) (*AcceptResp, error)
 	Commit(context.Context, *LogRecord) (*Blank, error)
+	Prepare(context.Context, *PrepareReq) (*PromiseResp, error)
+	NewView(context.Context, *NewViewReq) (*Blank, error)
 	mustEmbedUnimplementedPaxosReplicationServer()
 }
 
@@ -156,6 +178,12 @@ func (UnimplementedPaxosReplicationServer) Accept(context.Context, *LogRecord) (
 }
 func (UnimplementedPaxosReplicationServer) Commit(context.Context, *LogRecord) (*Blank, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Commit not implemented")
+}
+func (UnimplementedPaxosReplicationServer) Prepare(context.Context, *PrepareReq) (*PromiseResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Prepare not implemented")
+}
+func (UnimplementedPaxosReplicationServer) NewView(context.Context, *NewViewReq) (*Blank, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewView not implemented")
 }
 func (UnimplementedPaxosReplicationServer) mustEmbedUnimplementedPaxosReplicationServer() {}
 
@@ -206,6 +234,42 @@ func _PaxosReplication_Commit_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaxosReplication_Prepare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrepareReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaxosReplicationServer).Prepare(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PaxosReplication/Prepare",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaxosReplicationServer).Prepare(ctx, req.(*PrepareReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaxosReplication_NewView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewViewReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaxosReplicationServer).NewView(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.PaxosReplication/NewView",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaxosReplicationServer).NewView(ctx, req.(*NewViewReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PaxosReplication_ServiceDesc is the grpc.ServiceDesc for PaxosReplication service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -220,6 +284,14 @@ var PaxosReplication_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Commit",
 			Handler:    _PaxosReplication_Commit_Handler,
+		},
+		{
+			MethodName: "Prepare",
+			Handler:    _PaxosReplication_Prepare_Handler,
+		},
+		{
+			MethodName: "NewView",
+			Handler:    _PaxosReplication_NewView_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

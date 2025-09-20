@@ -88,7 +88,7 @@ func main() {
 	}()
 
 	logs.Info("Waiting for servers to start")
-	time.Sleep(2 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	logs.Info("Running test Cases")
 	run()
@@ -102,12 +102,12 @@ func run() {
 	defer logs.Debug("Exit")
 
 	var wg sync.WaitGroup
-	wg.Add(5)
+	wg.Add(1)
 	t := time.Now().UnixNano()
-	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
-	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
+	// go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
+	// go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
+	// go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
+	// go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
 	// Duplicate request
 	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
 	wg.Wait()
@@ -223,73 +223,21 @@ func printServerStatus(serverID int) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 
-	logs.Info("------------------------------------")
-	logs.Info("------------Server State------------")
-
-	sm.lock.Lock()
-
-	server, ok := sm.servers[serverID]
-	if !ok {
-		logs.Warnf("No server info for server-%d found", serverID)
-		return
-	}
-	if server.conn == nil {
-		err := sm.getConn(serverID)
-		if err != nil {
-			logs.Warnf("Failed to create conn for server-%d", serverID)
-			return
-		}
-	}
-	client := api.NewPaxosPrintInfoClient(server.conn)
-	sm.lock.Unlock()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
 	// Print DB
-	db, err := client.PrintDB(ctx, &api.Blank{})
-	if err != nil {
-		logs.Warnf("PrintDB failed: %v", err)
-	} else {
-		logs.Infof("Server %d Vault: %v", serverID, db.GetVault())
-	}
-
+	printDb(serverID)
 	// Print Log
-	logStore, err := client.PrintLog(ctx, &api.Blank{})
-	if err != nil {
-		logs.Warnf("PrintLog failed: %v", err)
-	} else {
-		logs.Infof("Server %d Log:", serverID)
-		for _, entry := range logStore.GetLogs() {
-			logs.Infof("  - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
-		}
-	}
-	logs.Info("-----------------------------------------")
+	printlog(serverID)
+
 }
 
 func printReqStatus(serverID, seqNum int) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 
-	logs.Info("------------------------------------")
-	logs.Info("------------Request State------------")
-
-	sm.lock.Lock()
-
-	server, ok := sm.servers[serverID]
-	if !ok {
-		logs.Warnf("No server info for server-%d found", serverID)
+	client, err := getPrintClient(serverID)
+	if err != nil {
 		return
 	}
-	if server.conn == nil {
-		err := sm.getConn(serverID)
-		if err != nil {
-			logs.Warnf("Failed to create conn for server-%d", serverID)
-			return
-		}
-	}
-	client := api.NewPaxosPrintInfoClient(server.conn)
-	sm.lock.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -298,8 +246,70 @@ func printReqStatus(serverID, seqNum int) {
 	if err != nil {
 		logs.Warnf("PrintStatus failed: %v", err)
 	} else {
-		logs.Infof("Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
+		logs.Infof("*PRINTSTATUS* Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
 	}
-	logs.Info("-----------------------------------------")
 
+}
+
+func printDb(serverID int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	client, err := getPrintClient(serverID)
+	if err != nil {
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	db, err := client.PrintDB(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("PrintDB failed: %v", err)
+	} else {
+		logs.Infof("*PRINT DB* Server %d Vault: %v", serverID, db.GetVault())
+	}
+}
+
+func printlog(serverID int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	client, err := getPrintClient(serverID)
+	if err != nil {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	logStore, err := client.PrintLog(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("PrintLog failed: %v", err)
+	} else {
+		logs.Infof("Server %d Log:", serverID)
+		for _, entry := range logStore.GetLogs() {
+			logs.Infof("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
+		}
+	}
+}
+
+func getPrintClient(serverID int) (api.PaxosPrintInfoClient, error) {
+	sm.lock.Lock()
+	defer sm.lock.Unlock()
+
+	server, ok := sm.servers[serverID]
+	if !ok {
+		logs.Warnf("No server info for server-%d found", serverID)
+		return nil, fmt.Errorf("no server Info found")
+	}
+	if server.conn == nil {
+		err := sm.getConn(serverID)
+		if err != nil {
+			logs.Warnf("Failed to create conn for server-%d", serverID)
+			return nil, fmt.Errorf("failed to create client")
+		}
+	}
+	client := api.NewPaxosPrintInfoClient(server.conn)
+
+	return client, nil
 }

@@ -23,6 +23,7 @@ const BASE_PORT = "9100"
 
 // STATE MACHINE CONFIG
 const INITIAL_BALANCE = 100 // TODO spec mentions 10, using 100 for now easier to analyze logs
+const NOOP = "no-op"
 
 // LOGGER
 const LOG_LEVEL = zap.InfoLevel

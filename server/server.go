@@ -34,12 +34,6 @@ type ClientRequestTxn struct {
 	amount   int
 }
 
-// Need to check timestamp before executing a request
-type ClientMessage struct {
-	txn       *ClientRequestTxn
-	timestamp int64
-}
-
 // Structure of a single record that will be stored in this servers log
 type LogRecord struct {
 	seqNum      int
@@ -91,12 +85,13 @@ type ServerImpl struct {
 	id            int
 	ballot        *BallotNumber
 	seqNum        int
-	leaderTime    *time.Timer
+	leaderTimer   *time.Timer
 	state         int
 	clientManager *ClientImpl
 	peerManager   *PeerManager
 	port          string
 	leaderBallot  *BallotNumber
+	leaderPulse   chan bool
 	api.UnimplementedClientServerTxnsServer
 	api.UnimplementedPaxosPrintInfoServer
 	api.UnimplementedPaxosReplicationServer
@@ -118,6 +113,9 @@ TODO:
 3) In client store connections of servers - Done
 4) In server store connections for other nodes - Done
 6) In client on failure needs to braodcast to all nodes
+7) check all state transitions
+8) Check if ballot val is updated properly
+9) Waiting for T_p time before responding to new candidate
 */
 
 var server *ServerImpl
@@ -152,23 +150,25 @@ func startServer(id int, t time.Duration) {
 	}
 	// TODO remove after implementing leader election
 	s := constants.Follower
-	if id == 1 {
-		s = constants.Leader
-	}
+	// if id == 1 {
+	// 	s = constants.Leader
+	// }
 
 	server = &ServerImpl{
 		id:            id,
 		ballot:        &BallotNumber{ballotVal: 1, serverID: id},
 		seqNum:        0,
-		leaderTime:    time.NewTimer(t),
+		leaderTimer:   time.NewTimer(t),
 		state:         s, // TODO: Default state should be follower , Change to Leader for testing
 		clientManager: cm,
 		peerManager:   pm,
 		leaderBallot:  &BallotNumber{ballotVal: 0, serverID: id}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
+		leaderPulse:   make(chan bool, 1),
 	}
 	server.port = constants.ServerPorts[id]
 	server.peerManager.initPeerConnections(server.id) // Note - not doing as a singleton on becoming first time leader for simplicity
 	sm.startExec()
+	go server.monitorLeader()
 	logs.Infof("Server Initialized successfully with serverId: %d and timer duration: %d", id, t)
 }
 
@@ -560,7 +560,7 @@ func (pm *PeerManager) broadcastAccept(quoram int, record *LogRecord, timestamp 
 				return
 			}
 			// TODO to check the resp for a different ballot or different message
-			if resp.Success {
+			if resp != nil && resp.Success {
 				if atomic.AddInt32(&acceptedVotes, 1) == int32(quoram) {
 					select {
 					case qourumChan <- true:
@@ -616,8 +616,14 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 	defer logs.Debug("Exit")
 
 	logs.Infof("Recieved accept RPC from Server-%d with ballot <%d, %d> for seqNum: #%d, with client txn <%s,%s,%d,%d>", in.GetServerId(), in.GetBallotVal(), in.GetServerId(), in.GetSeqNum(), in.GetSender(), in.GetReceiver(), in.GetAmount(), in.GetTimestamp())
-
+	// TODO maybe check if we are current leader, if me have multiple leader we need to reject incoming requests
 	s.lock.Lock()
+	if s.state == constants.Follower {
+		select {
+		case s.leaderPulse <- true:
+		default:
+		}
+	}
 	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
 		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
 		return &api.AcceptResp{Success: false}, nil
@@ -654,6 +660,12 @@ func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank,
 	logs.Infof("Recieved commit RPC from Server-%d with ballot <%d, %d> for seqNum: #%d, with client txn <%s,%s,%d,%d>", in.GetServerId(), in.GetBallotVal(), in.GetServerId(), in.GetSeqNum(), in.GetSender(), in.GetReceiver(), in.GetAmount(), in.GetTimestamp())
 
 	s.lock.Lock()
+	if s.state == constants.Follower {
+		select {
+		case s.leaderPulse <- true:
+		default:
+		}
+	}
 	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
 		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
 		return &api.Blank{}, nil
@@ -690,6 +702,219 @@ func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank,
 	logStore.lock.Unlock()
 
 	sm.applyTxn()
+
+	return &api.Blank{}, nil
+}
+
+func (s *ServerImpl) monitorLeader() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Info("Monitoring Leader for timeout expiration")
+
+	for {
+		select {
+		case <-s.leaderTimer.C:
+			s.lock.Lock()
+			isFollower := (s.state == constants.Follower)
+			s.lock.Unlock()
+			if isFollower {
+				logs.Warn("Leader Timed out starting election")
+				s.startElection()
+			} else {
+				s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Second)
+			}
+
+		case <-s.leaderPulse:
+			if !s.leaderTimer.Stop() {
+				// Timer already expired
+				<-s.leaderTimer.C
+			}
+			s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Second)
+		}
+	}
+}
+
+func (s *ServerImpl) startElection() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	s.lock.Lock()
+	s.state = constants.Candidate
+	s.ballot.ballotVal++
+	prepareReq := api.PrepareReq{
+		BallotVal: int32(s.ballot.ballotVal),
+		ServerId:  int32(s.id),
+	}
+	s.lock.Unlock()
+	logs.Infof("Starting election with ballot <%d, %d>", prepareReq.BallotVal, prepareReq.ServerId)
+
+	quorum := int((constants.MAX_NODES / 2) + 1)
+	var promiseVotes int32 = 1
+	promiseChan := make(chan *api.PromiseResp, constants.MAX_NODES)
+
+	for _, peer := range s.peerManager.peers {
+		go func(p *Peer) {
+
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+			defer cancel()
+			resp, err := p.api.Prepare(ctx, &prepareReq)
+			if err != nil {
+				logs.Warnf("Failed to send Promise rpc to server-%d with error %v", peer.id, err)
+				return
+			}
+
+			if resp != nil && resp.Success {
+				promiseChan <- resp
+			}
+		}(peer)
+	}
+
+	promiseLogs := make([]*api.LogRecord, 0)
+	for {
+		select {
+		case promise := <-promiseChan:
+			logs.Infof("recieved promise from server-%d", promise.GetServerId())
+			promiseLogs = append(promiseLogs, promise.GetAcceptLog()...)
+			if atomic.AddInt32(&promiseVotes, 1) == int32(quorum) {
+				logs.Infof("Server-%d achieved election quorom with ballotVal %d", prepareReq.ServerId, prepareReq.ServerId)
+				s.becomeLeader(int(prepareReq.BallotVal), promiseLogs)
+				return
+			}
+		case <-time.After(constants.LEADER_TIMEOUT_SECONDS * time.Second):
+			logs.Warn("Election timed out, if still in candidate state need to revert to follower")
+			s.lock.Lock()
+			if s.state == constants.Candidate {
+				s.state = constants.Follower
+			}
+			s.lock.Unlock()
+			return
+
+		}
+	}
+}
+
+func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.PromiseResp, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	inBallot := in.GetBallotVal()
+	inServerID := in.GetServerId()
+	logs.Infof("Received Prepare request with ballot <%d, %d>", inBallot, inServerID)
+
+	if inBallot > int32(s.ballot.ballotVal) ||
+		(inBallot == int32(s.ballot.ballotVal) && inServerID > int32(s.ballot.serverID)) {
+
+		logs.Infof("Promising for ballot <%d, %d>", inBallot, inServerID)
+		s.ballot.ballotVal = int(inBallot)
+		s.ballot.serverID = int(inServerID)
+		s.state = constants.Follower
+
+		logStore.lock.Lock()
+		defer logStore.lock.Unlock()
+		// DO we have to send all the logs or just uncommitted ones
+		acceptedLog := make([]*api.LogRecord, 0)
+		for _, record := range logStore.records {
+			if !record.isCommitted {
+				acceptedLog = append(acceptedLog, &api.LogRecord{
+					SeqNum:    int32(record.seqNum),
+					BallotVal: int32(record.ballot.ballotVal),
+					ServerId:  int32(record.ballot.serverID),
+					Sender:    record.txn.sender,
+					Receiver:  record.txn.reciever,
+					Amount:    int32(record.txn.amount),
+				})
+			}
+		}
+
+		return &api.PromiseResp{Success: true, BallotVal: inBallot, ServerId: int32(s.id), AcceptLog: acceptedLog}, nil
+	}
+
+	logs.Warnf("Rejecting Prepare request with older ballot <%d, %d>", inBallot, inServerID)
+	return &api.PromiseResp{Success: false, BallotVal: inBallot, ServerId: int32(s.id)}, nil
+}
+
+func (s *ServerImpl) becomeLeader(ballotVal int, logsFromPromises []*api.LogRecord) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	s.lock.Lock()
+	s.state = constants.Leader
+	s.leaderBallot.ballotVal = int(ballotVal)
+	s.leaderBallot.serverID = int(s.id)
+	s.lock.Unlock()
+
+	logMap := make(map[int32]*api.LogRecord)
+	maxSeq := int32(0)
+	for _, rec := range logsFromPromises {
+		if rec.GetSeqNum() > maxSeq {
+			maxSeq = rec.GetSeqNum()
+		}
+
+		if existing, ok := logMap[rec.GetSeqNum()]; !ok || rec.GetBallotVal() > existing.GetBallotVal() {
+			logMap[rec.GetSeqNum()] = rec
+		}
+	}
+
+	finalLog := make([]*api.LogRecord, 0)
+	for i := int32(1); i <= maxSeq; i++ {
+		if rec, ok := logMap[i]; ok {
+			finalLog = append(finalLog, rec)
+		} else {
+			noOpRecord := &api.LogRecord{
+				SeqNum:    i,
+				BallotVal: rec.BallotVal,
+				ServerId:  int32(s.id),
+				Sender:    constants.NOOP,
+			}
+			finalLog = append(finalLog, noOpRecord)
+		}
+	}
+
+	newViewReq := &api.NewViewReq{
+		BallotVal: int32(ballotVal),
+		ServerId:  int32(s.id),
+		AcceptLog: finalLog,
+	}
+
+	for _, peer := range s.peerManager.peers {
+		go func(p *Peer) {
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+			defer cancel()
+			p.api.NewView(ctx, newViewReq)
+		}(peer)
+	}
+}
+
+func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blank, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Infof("Received NewView from new leader <%d, %d>", in.GetBallotVal(), in.GetServerId())
+
+	s.lock.Lock()
+	s.leaderBallot.ballotVal = int(in.GetBallotVal())
+	s.leaderBallot.serverID = int(in.GetServerId())
+	s.state = constants.Follower
+	s.lock.Unlock()
+
+	logStore.lock.Lock()
+	defer logStore.lock.Unlock()
+	for _, newRecord := range in.GetAcceptLog() {
+		logStore.records[int(newRecord.GetSeqNum())] = &LogRecord{
+			seqNum: int(newRecord.GetSeqNum()),
+			ballot: &BallotNumber{ballotVal: int(newRecord.GetBallotVal()), serverID: int(newRecord.GetServerId())},
+			txn: &ClientRequestTxn{
+				sender:   newRecord.GetSender(),
+				reciever: newRecord.GetReceiver(),
+				amount:   int(newRecord.GetAmount()),
+			},
+			isCommitted: false,
+			isExecuted:  false,
+		}
+	}
 
 	return &api.Blank{}, nil
 }
