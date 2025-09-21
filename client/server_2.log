@@ -1,27 +1,24 @@
-{"level":"info","ts":"2025-09-19T02:50:44.919828617Z","caller":"server/server.go:170","msg":"Successfully created connections for server-1","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:44.920837376Z","caller":"server/server.go:170","msg":"Successfully created connections for server-3","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:44.920864418Z","caller":"server/server.go:187","msg":"Server Initialized successfully with serverId: 2 and timer duration: 10000000000","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:44.920869835Z","caller":"runtime/proc.go:285","msg":"Server-2 is up and running. Waiting for requests on port 9112","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:44.922108846Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9112","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921583641Z","caller":"api/api_grpc.pb.go:179","msg":"Recieved accept RPC from Server-1 with ballot <1, 1> for seqNum: #4, with client txn <Alice,Bob,25,1758250246909464320>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921623933Z","caller":"server/server.go:642","msg":"Added record to log with seqNum 4","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921718351Z","caller":"api/api_grpc.pb.go:179","msg":"Recieved accept RPC from Server-1 with ballot <1, 1> for seqNum: #3, with client txn <Alice,Bob,30,1758250246909461069>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.92177581Z","caller":"server/server.go:642","msg":"Added record to log with seqNum 3","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921822518Z","caller":"api/api_grpc.pb.go:179","msg":"Recieved accept RPC from Server-1 with ballot <1, 1> for seqNum: #1, with client txn <Alice,Bob,10,1758250246909368902>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921829768Z","caller":"server/server.go:642","msg":"Added record to log with seqNum 1","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921839227Z","caller":"api/api_grpc.pb.go:179","msg":"Recieved accept RPC from Server-1 with ballot <1, 1> for seqNum: #2, with client txn <Bob,Alice,60,1758250246909463486>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.921843102Z","caller":"server/server.go:642","msg":"Added record to log with seqNum 2","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922159897Z","caller":"api/api_grpc.pb.go:197","msg":"Recieved commit RPC from Server-1 with ballot <1, 1> for seqNum: #1, with client txn <Alice,Bob,10,0>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922171063Z","caller":"server/server.go:692","msg":"Log with seqNum 1 commited","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922190439Z","caller":"server/server.go:338","msg":"Detected new user, Initializing Balance for User: Alice with 100","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922194272Z","caller":"server/server.go:338","msg":"Detected new user, Initializing Balance for User: Bob with 100","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922197772Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922894403Z","caller":"api/api_grpc.pb.go:197","msg":"Recieved commit RPC from Server-1 with ballot <1, 1> for seqNum: #3, with client txn <Alice,Bob,30,0>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922901237Z","caller":"server/server.go:692","msg":"Log with seqNum 3 commited","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922922612Z","caller":"api/api_grpc.pb.go:197","msg":"Recieved commit RPC from Server-1 with ballot <1, 1> for seqNum: #2, with client txn <Bob,Alice,60,0>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922926862Z","caller":"server/server.go:692","msg":"Log with seqNum 2 commited","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922933279Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.92293682Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 3 and segNum 3","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922955154Z","caller":"api/api_grpc.pb.go:197","msg":"Recieved commit RPC from Server-1 with ballot <1, 1> for seqNum: #4, with client txn <Alice,Bob,25,0>","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922971946Z","caller":"server/server.go:692","msg":"Log with seqNum 4 commited","serverID":2}
-{"level":"info","ts":"2025-09-19T02:50:46.922979196Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 4 and segNum 4","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:41.947424416Z","caller":"server/server.go:169","msg":"Successfully created connections for server-1","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:41.947485896Z","caller":"server/server.go:169","msg":"Successfully created connections for server-3","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:41.947496392Z","caller":"server/server.go:187","msg":"Server Initialized successfully with serverId: 2 and timer duration: 10000000000","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:41.947501474Z","caller":"runtime/proc.go:285","msg":"Server-2 is up and running. Waiting for requests on port 9112","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:41.948057376Z","caller":"runtime/asm_arm64.s:1268","msg":"Monitoring Leader for timeout expiration","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:41.948514268Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9112","serverID":2}
+{"level":"warn","ts":"2025-09-21T00:27:51.954051746Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:51.954143799Z","caller":"server/server.go:742","msg":"Starting election with ballot <2, 2>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:51.954763173Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 1>","serverID":2}
+{"level":"warn","ts":"2025-09-21T00:27:51.954992846Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare request with older ballot <2, 1>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:51.957277242Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 3>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:51.957585846Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <2, 3>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:27:51.957505831Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <2, 3>","serverID":2}
+{"level":"warn","ts":"2025-09-21T00:28:01.955032589Z","caller":"server/server.go:742","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:01.963286688Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #1, with client txn <Alice,Bob,30,1758414481948501352>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:01.96335683Z","caller":"server/server.go:660","msg":"Added record to log with seqNum 1","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:01.965373423Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #1, with client txn <Alice,Bob,30,0>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:01.965513708Z","caller":"server/server.go:338","msg":"Detected new user, Initializing Balance for User: Alice with 100","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:01.965526953Z","caller":"server/server.go:338","msg":"Detected new user, Initializing Balance for User: Bob with 100","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:01.965531618Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:03.952239331Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #2, with client txn <Alice,Bob,10,1758414483949699965>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:03.952349876Z","caller":"server/server.go:660","msg":"Added record to log with seqNum 2","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:03.953494311Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #2, with client txn <Alice,Bob,10,0>","serverID":2}
+{"level":"info","ts":"2025-09-21T00:28:03.953640218Z","caller":"server/server.go:338","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":2}

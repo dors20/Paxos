@@ -48,7 +48,7 @@ func main() {
 
 	sm = &serversData{
 		servers:    make(map[int]*serverInfo),
-		currLeader: 1,
+		currLeader: constants.MAX_NODES,
 	}
 
 	for i := 1; i <= constants.MAX_NODES; i++ {
@@ -102,14 +102,15 @@ func run() {
 	defer logs.Debug("Exit")
 
 	var wg sync.WaitGroup
-	wg.Add(1)
-	t := time.Now().UnixNano()
+	wg.Add(2)
+	//t := time.Now().UnixNano()
 	// go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
-	// go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
 	// go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
 	// go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
 	// Duplicate request
-	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
+	time.Sleep(2 * time.Second)
+	go sm.makeRequest(&wg, "Alice", "Bob", 10, time.Now().UnixNano())
 	wg.Wait()
 	time.Sleep(time.Second)
 	printReqStatus(1, 1)
