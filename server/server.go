@@ -81,18 +81,24 @@ type PeerManager struct {
 
 // The main server struct
 type ServerImpl struct {
-	lock          sync.Mutex
-	id            int
-	ballot        *BallotNumber
-	seqNum        int
-	leaderTimer   *time.Timer
-	state         int
-	clientManager *ClientImpl
-	peerManager   *PeerManager
-	port          string
-	leaderBallot  *BallotNumber
-	leaderPulse   chan bool
-	viewLog       []*api.NewViewReq
+	lock            sync.Mutex
+	id              int
+	ballot          *BallotNumber
+	seqNum          int
+	leaderTimer     *time.Timer
+	state           int
+	clientManager   *ClientImpl
+	peerManager     *PeerManager
+	port            string
+	leaderBallot    *BallotNumber
+	leaderPulse     chan bool
+	viewLog         []*api.NewViewReq
+	tp              time.Duration
+	lastPrepareRecv time.Time
+	prepareChan     chan struct{}
+	pendingPrepares map[string]*api.PrepareReq
+	pendingMax      *api.PrepareReq
+	isPromised      bool
 	api.UnimplementedClientServerTxnsServer
 	api.UnimplementedPaxosPrintInfoServer
 	api.UnimplementedPaxosReplicationServer
@@ -156,16 +162,19 @@ func startServer(id int, t time.Duration) {
 	// }
 
 	server = &ServerImpl{
-		id:            id,
-		ballot:        &BallotNumber{ballotVal: 1, serverID: id},
-		seqNum:        0,
-		leaderTimer:   time.NewTimer(t),
-		state:         s, // TODO: Default state should be follower , Change to Leader for testing
-		clientManager: cm,
-		peerManager:   pm,
-		leaderBallot:  &BallotNumber{ballotVal: 0, serverID: 0}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
-		leaderPulse:   make(chan bool, 1),
-		viewLog:       make([]*api.NewViewReq, 0),
+		id:              id,
+		ballot:          &BallotNumber{ballotVal: 1, serverID: id},
+		seqNum:          0,
+		leaderTimer:     time.NewTimer(t),
+		state:           s, // TODO: Default state should be follower , Change to Leader for testing
+		clientManager:   cm,
+		peerManager:     pm,
+		leaderBallot:    &BallotNumber{ballotVal: 0, serverID: 0}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
+		leaderPulse:     make(chan bool, 1),
+		viewLog:         make([]*api.NewViewReq, 0),
+		tp:              constants.PREPARE_TIMEOUT * time.Millisecond,
+		prepareChan:     make(chan struct{}),
+		pendingPrepares: make(map[string]*api.PrepareReq),
 	}
 	server.port = constants.ServerPorts[id]
 	server.peerManager.initPeerConnections(server.id) // Note - not doing as a singleton on becoming first time leader for simplicity
@@ -208,14 +217,14 @@ func main() {
 	}
 }
 
-func stateTransition(from int, to int) {
+// func stateTransition(from int, to int) {
 
-	// TODO
-}
+// 	// TODO
+// }
 
-func isValidStateTransition(from int, to int) {
-	//TODO
-}
+// func isValidStateTransition(from int, to int) {
+// 	//TODO
+// }
 
 /*
 	NOTE
@@ -257,7 +266,7 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 		resp := client.lastResponse
 		s.clientManager.lock.Unlock()
 		if resp == nil {
-			resp = &api.Reply{Result: false, ServerId: int32(s.id), Error: "Failed to send cached resp"}
+			resp = &api.Reply{Result: false, ServerId: int32(s.id), Error: "Invalid stale request not found in cache"}
 		}
 
 		return resp, nil
@@ -774,13 +783,28 @@ func (s *ServerImpl) monitorLeader() {
 		case <-s.leaderTimer.C:
 			s.lock.Lock()
 			isFollower := (s.state == constants.Follower)
+			s.isPromised = false
+			close(s.prepareChan)
+			go func() {
+				time.Sleep(5 * time.Millisecond)
+				s.lock.Lock()
+				s.prepareChan = make(chan struct{})
+				s.lock.Unlock()
+			}()
+			timeElapsed := time.Since(s.lastPrepareRecv)
+			tp := s.tp
 			s.lock.Unlock()
 			if isFollower {
-				logs.Warn("Leader Timed out starting election")
-				s.startElection()
+				if timeElapsed >= tp {
+					logs.Warn("Leader Timed out starting election")
+					s.startElection()
+				} else {
+					logs.Warnf("Leader Timed out but PREPARE seen in last tp")
+				}
 			}
 
 			s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Second)
+			//s.leaderTimer.Reset((constants.LEADER_TIMEOUT_SECONDS*1000 + time.Duration(rand.Intn(1000))) * time.Millisecond)
 
 		case <-s.leaderPulse:
 			if !s.leaderTimer.Stop() {
@@ -799,11 +823,15 @@ func (s *ServerImpl) startElection() {
 	defer logs.Debug("Exit")
 
 	s.lock.Lock()
-	s.state = constants.Candidate
-	newBallotVal := s.ballot.ballotVal
-	if s.leaderBallot.ballotVal > newBallotVal {
-		newBallotVal = s.leaderBallot.ballotVal
+	if time.Since(s.lastPrepareRecv) < s.tp {
+		logs.Infof("Suppressing prepare send: received a new prepare in last tp)")
+		s.state = constants.Follower
+		s.lock.Unlock()
+		return
 	}
+
+	s.state = constants.Candidate
+	newBallotVal := max(s.leaderBallot.ballotVal, s.ballot.ballotVal)
 	s.ballot.ballotVal = newBallotVal + 1
 	prepareReq := api.PrepareReq{
 		BallotVal: int32(s.ballot.ballotVal),
@@ -823,7 +851,7 @@ func (s *ServerImpl) startElection() {
 			defer cancel()
 			resp, err := p.api.Prepare(ctx, &prepareReq)
 			if err != nil {
-				logs.Warnf("Failed to send Promise rpc to server-%d with error %v", peer.id, err)
+				logs.Warnf("Failed to send Promise rpc to server-%d with error %v", p.id, err)
 				return
 			}
 
@@ -875,19 +903,47 @@ func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.Prom
 	defer logs.Debug("Exit")
 
 	s.lock.Lock()
-	defer s.lock.Unlock()
-
 	inBallot := in.GetBallotVal()
 	inServerID := in.GetServerId()
 	logs.Infof("Received Prepare request with ballot <%d, %d>", inBallot, inServerID)
 
-	if inBallot > int32(s.ballot.ballotVal) ||
-		(inBallot == int32(s.ballot.ballotVal) && inServerID > int32(s.ballot.serverID)) {
+	s.lastPrepareRecv = time.Now()
+	cycleChan := s.prepareChan
 
+	select {
+	case <-cycleChan:
+	default:
+		key := fmt.Sprintf("%d:%d", inBallot, inServerID)
+		s.pendingPrepares[key] = in
+		if s.pendingMax == nil || higherBallot(inBallot, inServerID, s.pendingMax.GetBallotVal(), s.pendingMax.GetServerId()) {
+			s.pendingMax = in
+		}
+		s.lock.Unlock()
+
+		select {
+		case <-cycleChan:
+		case <-ctx.Done():
+			return &api.PromiseResp{Success: false, BallotVal: inBallot, ServerId: int32(s.id)}, nil
+		}
+		s.lock.Lock()
+	}
+
+	if s.isPromised {
+		logs.Warn("Prepare rejected: already promised in this expiry window")
+		s.lock.Unlock()
+		return &api.PromiseResp{Success: false, BallotVal: inBallot, ServerId: int32(s.id)}, nil
+	}
+
+	if s.pendingMax == nil || higherBallot(inBallot, inServerID, s.pendingMax.GetBallotVal(), s.pendingMax.GetServerId()) {
+		s.pendingMax = in
+	}
+
+	if (inBallot > int32(s.ballot.ballotVal) || (inBallot == int32(s.ballot.ballotVal) && inServerID > int32(s.ballot.serverID))) && (s.pendingMax != nil && inBallot == s.pendingMax.GetBallotVal() && inServerID == s.pendingMax.GetServerId()) {
 		logs.Infof("Promising for ballot <%d, %d>", inBallot, inServerID)
 		s.ballot.ballotVal = int(inBallot)
 		s.ballot.serverID = int(inServerID)
 		s.state = constants.Follower
+		s.isPromised = true
 
 		select {
 		case s.leaderPulse <- true:
@@ -895,8 +951,6 @@ func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.Prom
 		}
 
 		logStore.lock.Lock()
-
-		// DO we have to send all the logs or just uncommitted ones
 		acceptedLog := make([]*api.LogRecord, 0)
 		for _, record := range logStore.records {
 			acceptedLog = append(acceptedLog, &api.LogRecord{
@@ -908,13 +962,20 @@ func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.Prom
 				Amount:      int32(record.txn.amount),
 				IsCommitted: record.isCommitted,
 			})
-
 		}
 		logStore.lock.Unlock()
+
+		// clear pending for next cycle
+		s.pendingPrepares = make(map[string]*api.PrepareReq)
+		s.pendingMax = nil
+
+		s.lock.Unlock()
 		return &api.PromiseResp{Success: true, BallotVal: inBallot, ServerId: int32(s.id), AcceptLog: acceptedLog}, nil
 	}
 
-	logs.Warnf("Rejecting Prepare request with older ballot <%d, %d>", inBallot, inServerID)
+	// otherwise, reject
+	logs.Warnf("Rejecting Prepare <%d,%d>", inBallot, inServerID)
+	s.lock.Unlock()
 	return &api.PromiseResp{Success: false, BallotVal: inBallot, ServerId: int32(s.id)}, nil
 }
 
@@ -1075,4 +1136,13 @@ func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blan
 	}
 
 	return &api.Blank{}, nil
+}
+
+func higherBallot(aVal, aID, bVal, bID int32) bool {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	if aVal != bVal {
+		return aVal > bVal
+	}
+	return aID > bID
 }

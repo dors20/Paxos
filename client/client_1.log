@@ -1,241 +1,160 @@
-{"level":"info","ts":"2025-10-05T15:16:59.571197764Z","caller":"runtime/proc.go:285","msg":"Server Binary built","clientID":1}
-{"level":"info","ts":"2025-10-05T15:16:59.572297456Z","caller":"runtime/proc.go:285","msg":"Server-1 started successfully with PID: 64276","clientID":1}
-{"level":"info","ts":"2025-10-05T15:16:59.5727042Z","caller":"runtime/proc.go:285","msg":"Server-2 started successfully with PID: 64277","clientID":1}
-{"level":"info","ts":"2025-10-05T15:16:59.573134485Z","caller":"runtime/proc.go:285","msg":"Server-3 started successfully with PID: 64278","clientID":1}
-{"level":"info","ts":"2025-10-05T15:16:59.573150652Z","caller":"runtime/proc.go:285","msg":"Client communications on port 9100","clientID":1}
-{"level":"info","ts":"2025-10-05T15:16:59.573155818Z","caller":"runtime/proc.go:285","msg":"Waiting for servers to start","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.577532664Z","caller":"runtime/proc.go:285","msg":"Running test Cases","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579808672Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: A -> B, Amount: 25 at time: 1759677439578588981","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.57983313Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 10 at time: 1759677439578514274","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579923629Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 30 at time: 1759677439578561940","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579858463Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: A -> B, Amount: 30 at time: 1759677439578569857","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579968336Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: B -> A, Amount: 60 at time: 1759677439578588065","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579955378Z","caller":"client/client.go:239","msg":"Creating server 3 connection for the first time","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579994711Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 25 at time: 1759677439578569023","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.579808589Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Bob -> Alice, Amount: 60 at time: 1759677439578563232","clientID":1}
-{"level":"warn","ts":"2025-10-05T15:17:19.593393014Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved error from server; Failed to send cached resp","clientID":1}
-{"level":"warn","ts":"2025-10-05T15:17:19.59346843Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved error from server; Failed to send cached resp","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.594501623Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.594509831Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.594550331Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.594562372Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:19.594573122Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:21.595268688Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 10 at time: 1759677441595176397","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:21.598648096Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:41.62291587Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Mark -> jack, Amount: 30 at time: 1759677461618620397","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:41.622912453Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: jack -> Alice, Amount: 60 at time: 1759677461621132273","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:41.622915245Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: jack -> Bob, Amount: 25 at time: 1759677461621175231","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:41.62686639Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 4 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:41.626867349Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 4 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:17:41.626872265Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 4 from server 3","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:11.635550886Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: zack -> cat, Amount: 25 at time: 1759677491635029811","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:11.635544553Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: jack -> jack, Amount: 60 at time: 1759677491634820231","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:11.642512365Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: false and ballotVal: 7 from server 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:11.642744987Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 7 from server 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:11.642782611Z","caller":"runtime/asm_arm64.s:1268","msg":"Detected new server cluster leader 2, using this server for future requests","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.643719889Z","caller":"client/client.go:404","msg":"Creating server 1 connection for the first time","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.652872835Z","caller":"client/client.go:135","msg":"*PRINTSTATUS* Server 1 Status for Seq #1: EXECUTED","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.653797404Z","caller":"client/client.go:300","msg":"*PRINT DB* Server 1 Vault: map[A:135 Alice:175 B:65 Bob:110 Mark:70 cat:125 jack:45 zack:75]","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654920471Z","caller":"client/client.go:302","msg":"Server 1 Log:","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654964345Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 1, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654974428Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 2, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654981262Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 3, From: A, To: B, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654987637Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 4, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654994136Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 5, From: B, To: A, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.654999095Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 6, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.655005178Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 7, From: Mark, To: jack, Amt: 30, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.655012011Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 8, From: jack, To: Alice, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.655052927Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 9, From: jack, To: Bob, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.655060094Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 10, From: jack, To: jack, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65506426Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 11, From: zack, To: cat, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.655072677Z","caller":"client/client.go:404","msg":"Creating server 2 connection for the first time","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.6568529Z","caller":"client/client.go:300","msg":"*PRINT DB* Server 2 Vault: map[A:135 Alice:175 B:65 Bob:110 Mark:70 cat:125 jack:45 zack:75]","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657148229Z","caller":"client/client.go:302","msg":"Server 2 Log:","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657170604Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 1, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657176437Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 2, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657181229Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 3, From: A, To: B, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65718677Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 4, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657191228Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 5, From: B, To: A, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657196062Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 6, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65719977Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 7, From: Mark, To: jack, Amt: 30, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657214895Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 8, From: jack, To: Alice, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657223145Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 9, From: jack, To: Bob, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657227603Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 10, From: jack, To: jack, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657231603Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 11, From: zack, To: cat, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657623139Z","caller":"client/client.go:300","msg":"*PRINT DB* Server 3 Vault: map[A:135 Alice:175 B:65 Bob:110 Mark:70 cat:125 jack:45 zack:75]","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65788251Z","caller":"client/client.go:302","msg":"Server 3 Log:","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65789976Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 1, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657905843Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 2, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657927217Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 3, From: A, To: B, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657934967Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 4, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657939717Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 5, From: B, To: A, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657944634Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 6, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657949259Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 7, From: Mark, To: jack, Amt: 30, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.6579533Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 8, From: jack, To: Alice, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657957342Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 9, From: jack, To: Bob, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.6579608Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 10, From: jack, To: jack, Amt: 60, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.657964925Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 11, From: zack, To: cat, Amt: 25, Committed: true, ballotVal: 7, serverID: 2","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658488792Z","caller":"client/client.go:139","msg":"Server 1 View History:","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658538417Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 1: Leader <2, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658548291Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 2: Leader <3, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658561791Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658566625Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658572541Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658577249Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658581374Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658585541Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658588708Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 3: Leader <4, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658594541Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658598457Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658603874Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658607541Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658611416Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658635082Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658642623Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 4: Leader <5, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658648415Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658651498Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658658165Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658661831Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658665998Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65866954Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658675373Z","caller":"client/client.go:139","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658680331Z","caller":"client/client.go:139","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658684164Z","caller":"client/client.go:139","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658687289Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 5: Leader <6, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658691456Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658698623Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658704039Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658708039Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658710956Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658714414Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658719247Z","caller":"client/client.go:139","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65873708Z","caller":"client/client.go:139","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658742164Z","caller":"client/client.go:139","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658745705Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 6: Leader <7, 1>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658749872Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65875458Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658758872Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658763788Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658768663Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658771663Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65877933Z","caller":"client/client.go:139","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658784121Z","caller":"client/client.go:139","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658790288Z","caller":"client/client.go:139","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658793788Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 7: Leader <7, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658796913Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658802954Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658806413Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658810121Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658814662Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658817496Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658821954Z","caller":"client/client.go:139","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658825912Z","caller":"client/client.go:139","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.658829204Z","caller":"client/client.go:139","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659389279Z","caller":"client/client.go:140","msg":"Server 2 View History:","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659419445Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 1: Leader <2, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659427195Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 2: Leader <3, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65943307Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659437528Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659441736Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659445736Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65945082Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659455403Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659460778Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 3: Leader <4, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659464861Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659486652Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659492319Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659495319Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659505944Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659509569Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659513569Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 4: Leader <5, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659517985Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659521444Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659524777Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659528318Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659532235Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659535652Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659538193Z","caller":"client/client.go:140","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659542568Z","caller":"client/client.go:140","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659549568Z","caller":"client/client.go:140","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65955361Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 5: Leader <6, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659558401Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659561735Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659564526Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659568693Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659572609Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659576068Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659579109Z","caller":"client/client.go:140","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659582984Z","caller":"client/client.go:140","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659587609Z","caller":"client/client.go:140","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659592151Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 6: Leader <7, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659595317Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659599526Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659607151Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659610401Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.65961765Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659620984Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659626025Z","caller":"client/client.go:140","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659632692Z","caller":"client/client.go:140","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.659636942Z","caller":"client/client.go:140","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660040477Z","caller":"client/client.go:141","msg":"Server 3 View History:","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660059269Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 1: Leader <2, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660065019Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 2: Leader <3, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660070394Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.66007556Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660078894Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660082227Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.66008581Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660107601Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660115435Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 3: Leader <4, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660118935Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660122893Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660127268Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660130143Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660134268Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660137976Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660140851Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 4: Leader <5, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660145934Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660149392Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660152517Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660156226Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660159726Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660163726Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660171559Z","caller":"client/client.go:141","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660174559Z","caller":"client/client.go:141","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660178392Z","caller":"client/client.go:141","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660181267Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 5: Leader <6, 3>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660184392Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660188517Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660191225Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660194808Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.6602211Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660224808Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660227641Z","caller":"client/client.go:141","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660232308Z","caller":"client/client.go:141","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660236433Z","caller":"client/client.go:141","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660239391Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 6: Leader <7, 1>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660242099Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660246349Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660250391Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660253016Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660256599Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660260099Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660263682Z","caller":"client/client.go:141","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660267807Z","caller":"client/client.go:141","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660271391Z","caller":"client/client.go:141","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660274224Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 7: Leader <7, 2>","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660277849Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Bob, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660282515Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660315973Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660337765Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Alice, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.66034464Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: B, To: A, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660348348Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660352431Z","caller":"client/client.go:141","msg":"    - Seq: 7, From: Mark, To: jack, Amt: 30","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660356806Z","caller":"client/client.go:141","msg":"    - Seq: 8, From: jack, To: Alice, Amt: 60","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660360389Z","caller":"client/client.go:141","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660363723Z","caller":"client/client.go:94","msg":"All requests completed","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660402014Z","caller":"runtime/proc.go:285","msg":"Completed all test cases","clientID":1}
-{"level":"info","ts":"2025-10-05T15:18:12.660447721Z","caller":"client/client.go:98","msg":"No test cases to execute. Shutting down all servers","clientID":1}
-{"level":"warn","ts":"2025-10-05T15:18:12.662240611Z","caller":"client/client.go:98","msg":"Successfully shut down server-1 with PID: 64276","clientID":1}
-{"level":"warn","ts":"2025-10-05T15:18:12.662726187Z","caller":"client/client.go:98","msg":"Successfully shut down server-2 with PID: 64277","clientID":1}
-{"level":"warn","ts":"2025-10-05T15:18:12.663077057Z","caller":"client/client.go:98","msg":"Successfully shut down server-3 with PID: 64278","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:13.1304425Z","caller":"runtime/proc.go:285","msg":"Server Binary built","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:13.130800429Z","caller":"runtime/proc.go:285","msg":"Server-1 started successfully with PID: 28093","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:13.131012746Z","caller":"runtime/proc.go:285","msg":"Server-2 started successfully with PID: 28094","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:13.131217104Z","caller":"runtime/proc.go:285","msg":"Server-3 started successfully with PID: 28095","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:13.131239811Z","caller":"runtime/proc.go:285","msg":"Client communications on port 9100","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:13.131248185Z","caller":"runtime/proc.go:285","msg":"Waiting for servers to start","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.142648358Z","caller":"runtime/proc.go:285","msg":"Running test Cases","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.143030494Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: A -> B, Amount: 25 at time: 1759700788142956833","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.144398715Z","caller":"client/client.go:239","msg":"Creating server 3 connection for the first time","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.143024619Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Bob -> Alice, Amount: 60 at time: 1759700788142953333","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.143064866Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 30 at time: 1759700788142951334","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.143091322Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: A -> B, Amount: 30 at time: 1759700788142955458","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.14311982Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: B -> A, Amount: 60 at time: 1759700788142956042","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.143208229Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 25 at time: 1759700788142954708","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.143054534Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 10 at time: 1759700788142910545","clientID":1}
+{"level":"warn","ts":"2025-10-05T21:46:28.148193196Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved error from server; Invalid stale request not found in cache","clientID":1}
+{"level":"warn","ts":"2025-10-05T21:46:28.148224652Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved error from server; Invalid stale request not found in cache","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.148951634Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.148974341Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.149013046Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.149024961Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:28.149036585Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 2 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:48.159440704Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Alice -> Bob, Amount: 10 at time: 1759700808159272426","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:48.162945834Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 3 from server 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:46:48.162999121Z","caller":"runtime/asm_arm64.s:1268","msg":"Detected new server cluster leader 2, using this server for future requests","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.164151765Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: Mark -> jack, Amount: 30 at time: 1759700828163992361","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.164315835Z","caller":"client/client.go:239","msg":"Creating server 2 connection for the first time","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.164151598Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: jack -> Bob, Amount: 25 at time: 1759700828164006944","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.164190012Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: jack -> Alice, Amount: 60 at time: 1759700828164004569","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.172093031Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 4 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.172123529Z","caller":"runtime/asm_arm64.s:1268","msg":"Detected new server cluster leader 3, using this server for future requests","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.172100989Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 4 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:08.172141652Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 4 from server 3","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:38.17413261Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: zack -> cat, Amount: 25 at time: 1759700858173593529","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:38.174132652Z","caller":"runtime/asm_arm64.s:1268","msg":"Sending transaction: jack -> jack, Amount: 60 at time: 1759700858173338800","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:38.179867019Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: false and ballotVal: 5 from server 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:38.179876101Z","caller":"runtime/asm_arm64.s:1268","msg":"Recieved response with Success: true and ballotVal: 5 from server 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:38.179949595Z","caller":"runtime/asm_arm64.s:1268","msg":"Detected new server cluster leader 2, using this server for future requests","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.18466111Z","caller":"client/client.go:404","msg":"Creating server 1 connection for the first time","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.189623665Z","caller":"client/client.go:135","msg":"*PRINTSTATUS* Server 1 Status for Seq #1: EXECUTED","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.190622084Z","caller":"client/client.go:300","msg":"*PRINT DB* Server 1 Vault: map[A:105 Alice:185 B:95 Bob:100 Mark:70 cat:125 jack:45 zack:75]","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191258782Z","caller":"client/client.go:302","msg":"Server 1 Log:","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191299279Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 1, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191309986Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 2, From: B, To: A, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191316194Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 3, From: A, To: B, Amt: 30, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19132136Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 4, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191326526Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 5, From: A, To: B, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191361148Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 6, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191368606Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 7, From: jack, To: Alice, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191372939Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 8, From: Mark, To: jack, Amt: 30, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191377439Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 9, From: jack, To: Bob, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191382105Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 10, From: zack, To: cat, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191385896Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 11, From: jack, To: jack, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.191891397Z","caller":"client/client.go:300","msg":"*PRINT DB* Server 2 Vault: map[A:105 Alice:185 B:95 Bob:100 Mark:70 cat:125 jack:45 zack:75]","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.1921645Z","caller":"client/client.go:302","msg":"Server 2 Log:","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192204955Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 1, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192211454Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 2, From: B, To: A, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192215871Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 3, From: A, To: B, Amt: 30, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192219954Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 4, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192224412Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 5, From: A, To: B, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192229036Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 6, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192233036Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 7, From: jack, To: Alice, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192236911Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 8, From: Mark, To: jack, Amt: 30, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192240369Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 9, From: jack, To: Bob, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19224391Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 10, From: zack, To: cat, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19224791Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 11, From: jack, To: jack, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.192799156Z","caller":"client/client.go:300","msg":"*PRINT DB* Server 3 Vault: map[A:105 Alice:185 B:95 Bob:100 Mark:70 cat:125 jack:45 zack:75]","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193131171Z","caller":"client/client.go:302","msg":"Server 3 Log:","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193166668Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 1, From: Alice, To: Bob, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193175876Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 2, From: B, To: A, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193181042Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 3, From: A, To: B, Amt: 30, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193185542Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 4, From: Bob, To: Alice, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193189833Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 5, From: A, To: B, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193193833Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 6, From: Alice, To: Bob, Amt: 10, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193197666Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 7, From: jack, To: Alice, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193203332Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 8, From: Mark, To: jack, Amt: 30, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193207373Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 9, From: jack, To: Bob, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193211623Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 10, From: zack, To: cat, Amt: 25, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193215539Z","caller":"client/client.go:302","msg":"*PRINT LOGS* - Seq: 11, From: jack, To: jack, Amt: 60, Committed: true, ballotVal: 5, serverID: 2","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193771286Z","caller":"client/client.go:139","msg":"Server 1 View History:","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193828156Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 1: Leader <2, 3>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19383728Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 2: Leader <3, 2>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193889526Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193898359Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193903192Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193907066Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193912191Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193918274Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 3: Leader <4, 3>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19392194Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193927773Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193930981Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193936231Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193947313Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193951438Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193955521Z","caller":"client/client.go:139","msg":"*PRINT VIEW* - View 4: Leader <5, 2>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193959395Z","caller":"client/client.go:139","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193963062Z","caller":"client/client.go:139","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193967811Z","caller":"client/client.go:139","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193970519Z","caller":"client/client.go:139","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193975352Z","caller":"client/client.go:139","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193979685Z","caller":"client/client.go:139","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.193983227Z","caller":"client/client.go:139","msg":"    - Seq: 7, From: jack, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19398631Z","caller":"client/client.go:139","msg":"    - Seq: 8, From: Mark, To: jack, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194003475Z","caller":"client/client.go:139","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194247205Z","caller":"client/client.go:140","msg":"Server 2 View History:","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194264995Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 1: Leader <2, 3>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19427137Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 2: Leader <3, 2>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194274953Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194280578Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194283911Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194286702Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194290452Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194294118Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 3: Leader <4, 3>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194298451Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194302367Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.1943157Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194318949Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194322282Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194326449Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194358779Z","caller":"client/client.go:140","msg":"*PRINT VIEW* - View 4: Leader <5, 2>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194366237Z","caller":"client/client.go:140","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194371153Z","caller":"client/client.go:140","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194374362Z","caller":"client/client.go:140","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194377778Z","caller":"client/client.go:140","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194380903Z","caller":"client/client.go:140","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194384111Z","caller":"client/client.go:140","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19438861Z","caller":"client/client.go:140","msg":"    - Seq: 7, From: jack, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194392443Z","caller":"client/client.go:140","msg":"    - Seq: 8, From: Mark, To: jack, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19439586Z","caller":"client/client.go:140","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194717084Z","caller":"client/client.go:141","msg":"Server 3 View History:","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194745915Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 1: Leader <2, 3>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194753247Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 2: Leader <3, 2>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194758664Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19476233Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194767038Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194770788Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194783662Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194787078Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 3: Leader <4, 3>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194791953Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194796452Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19479991Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194804243Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194807868Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194812034Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194815242Z","caller":"client/client.go:141","msg":"*PRINT VIEW* - View 4: Leader <5, 2>","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194818825Z","caller":"client/client.go:141","msg":"    - Seq: 1, From: Alice, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194822867Z","caller":"client/client.go:141","msg":"    - Seq: 2, From: B, To: A, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194837616Z","caller":"client/client.go:141","msg":"    - Seq: 3, From: A, To: B, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.19484149Z","caller":"client/client.go:141","msg":"    - Seq: 4, From: Bob, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194844782Z","caller":"client/client.go:141","msg":"    - Seq: 5, From: A, To: B, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194847823Z","caller":"client/client.go:141","msg":"    - Seq: 6, From: Alice, To: Bob, Amt: 10","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194850948Z","caller":"client/client.go:141","msg":"    - Seq: 7, From: jack, To: Alice, Amt: 60","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194854947Z","caller":"client/client.go:141","msg":"    - Seq: 8, From: Mark, To: jack, Amt: 30","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194858281Z","caller":"client/client.go:141","msg":"    - Seq: 9, From: jack, To: Bob, Amt: 25","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194863238Z","caller":"client/client.go:94","msg":"All requests completed","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194892611Z","caller":"runtime/proc.go:285","msg":"Completed all test cases","clientID":1}
+{"level":"info","ts":"2025-10-05T21:47:43.194926983Z","caller":"client/client.go:98","msg":"No test cases to execute. Shutting down all servers","clientID":1}
+{"level":"warn","ts":"2025-10-05T21:47:43.195191628Z","caller":"client/client.go:98","msg":"Successfully shut down server-1 with PID: 28093","clientID":1}
+{"level":"warn","ts":"2025-10-05T21:47:43.195429651Z","caller":"client/client.go:98","msg":"Successfully shut down server-2 with PID: 28094","clientID":1}
+{"level":"warn","ts":"2025-10-05T21:47:43.19566184Z","caller":"client/client.go:98","msg":"Successfully shut down server-3 with PID: 28095","clientID":1}

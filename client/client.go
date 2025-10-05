@@ -88,7 +88,7 @@ func main() {
 	}()
 
 	logs.Info("Waiting for servers to start")
-	time.Sleep(20 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	logs.Info("Running test Cases")
 	run()
@@ -113,7 +113,7 @@ func run() {
 	go sm.makeRequest(&wg, "A", "B", 25, time.Now().UnixNano())
 	wg.Wait()
 	// Duplicate request
-	time.Sleep(2 * time.Second)
+	time.Sleep(20 * time.Second)
 	var wg1 sync.WaitGroup
 	wg1.Add(1)
 	go sm.makeRequest(&wg1, "Alice", "Bob", 10, time.Now().UnixNano())
@@ -131,7 +131,7 @@ func run() {
 	go sm.makeRequest(&wg3, "jack", "jack", 60, time.Now().UnixNano())
 	go sm.makeRequest(&wg3, "zack", "cat", 25, time.Now().UnixNano())
 	wg3.Wait()
-	time.Sleep(time.Second)
+	time.Sleep(5 * time.Second)
 	printReqStatus(1, 1)
 	printServerStatus(1)
 	printServerStatus(2)
@@ -312,7 +312,7 @@ func printReqStatus(serverID, seqNum int) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
 	defer cancel()
 
 	status, err := client.PrintStatus(ctx, &api.RequestInfo{SeqNum: int32(seqNum)})
@@ -333,7 +333,7 @@ func printDb(serverID int) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
 	defer cancel()
 
 	db, err := client.PrintDB(ctx, &api.Blank{})
@@ -352,7 +352,7 @@ func printlog(serverID int) {
 	if err != nil {
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
 	defer cancel()
 
 	logStore, err := client.PrintLog(ctx, &api.Blank{})
@@ -374,7 +374,7 @@ func printView(serverID int) {
 	if err != nil {
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
 	defer cancel()
 
 	viewHistory, err := client.PrintView(ctx, &api.Blank{})
