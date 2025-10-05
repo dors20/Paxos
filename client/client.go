@@ -102,66 +102,129 @@ func run() {
 	defer logs.Debug("Exit")
 
 	var wg sync.WaitGroup
-	wg.Add(2)
-	//t := time.Now().UnixNano()
-	// go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
+	wg.Add(7)
+	t := time.Now().UnixNano()
+	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
 	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
-	// go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
-	// go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "A", "B", 30, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "B", "A", 60, time.Now().UnixNano())
+	go sm.makeRequest(&wg, "A", "B", 25, time.Now().UnixNano())
+	wg.Wait()
 	// Duplicate request
 	time.Sleep(2 * time.Second)
-	go sm.makeRequest(&wg, "Alice", "Bob", 10, time.Now().UnixNano())
-	wg.Wait()
+	var wg1 sync.WaitGroup
+	wg1.Add(1)
+	go sm.makeRequest(&wg1, "Alice", "Bob", 10, time.Now().UnixNano())
+	wg1.Wait()
+	time.Sleep(20 * time.Second)
+	var wg2 sync.WaitGroup
+	wg2.Add(3)
+	go sm.makeRequest(&wg2, "Mark", "jack", 30, time.Now().UnixNano())
+	go sm.makeRequest(&wg2, "jack", "Alice", 60, time.Now().UnixNano())
+	go sm.makeRequest(&wg2, "jack", "Bob", 25, time.Now().UnixNano())
+	wg2.Wait()
+	time.Sleep(30 * time.Second)
+	var wg3 sync.WaitGroup
+	wg3.Add(2)
+	go sm.makeRequest(&wg3, "jack", "jack", 60, time.Now().UnixNano())
+	go sm.makeRequest(&wg3, "zack", "cat", 25, time.Now().UnixNano())
+	wg3.Wait()
 	time.Sleep(time.Second)
 	printReqStatus(1, 1)
 	printServerStatus(1)
 	printServerStatus(2)
 	printServerStatus(3)
+	printView(1)
+	printView(2)
+	printView(3)
 	logs.Info("All requests completed")
 }
 
 func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever string, amount int, timestamp int64) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
+	defer wg.Done()
 
 	logs.Infof("Sending transaction: %s -> %s, Amount: %d at time: %d", sender, reciever, amount, timestamp)
 
-	defer wg.Done()
-
-	conn, err := sm.getClientServerConn()
-	if err != nil {
-		return
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*constants.REQUEST_TIMEOUT)
-	defer cancel()
-	reply, err := conn.Request(ctx, &api.Message{
+	msg := &api.Message{
 		Sender:    sender,
 		Receiver:  reciever,
 		Amount:    int32(amount),
 		Timestamp: timestamp,
 		ClientId:  sender,
-	})
-	if err != nil {
-		logs.Warnf("Failed Request with error : %v", err)
-		// TODO Implement retry to all nodes
+	}
+
+	conn, err := sm.getClientServerConn()
+	var reply *api.Reply
+
+	if err == nil {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*constants.REQUEST_TIMEOUT)
+		defer cancel()
+		reply, err = conn.Request(ctx, msg)
+	}
+	if err != nil || (reply != nil && reply.GetError() == "NOT_LEADER") {
+		logs.Warnf("Initial request failed or was sent to a non-leader. Broadcasting to all nodes. Error: %v", err)
+		reply = sm.broadcastRequest(msg)
 	}
 	if reply == nil {
-		logs.Warnf("Received a nil reply from the server without an error.")
+		logs.Warnf("Received a nil reply from the server after all attempts.")
 		return
 	}
 	if reply.GetError() != "" {
 		logs.Warnf("Recieved error from server; %s", reply.GetError())
+		return
 	} else {
-		logs.Infof("Recieved response with Success: %t and ballotVal: %d", reply.Result, reply.BallotVal)
+		logs.Infof("Recieved response with Success: %t and ballotVal: %d from server %d", reply.Result, reply.BallotVal, reply.ServerId)
 	}
+
 	sm.lock.Lock()
-	if sm.currLeader != int(reply.ServerId) {
+	if sm.currLeader != int(reply.ServerId) && reply.Result {
 		// TODO Maybe check for range
 		sm.currLeader = int(reply.ServerId)
 		logs.Infof("Detected new server cluster leader %d, using this server for future requests", sm.currLeader)
 	}
 	sm.lock.Unlock()
+}
+
+func (sm *serversData) broadcastRequest(msg *api.Message) *api.Reply {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	replyChan := make(chan *api.Reply, constants.MAX_NODES)
+	var wg sync.WaitGroup
+
+	for i := 1; i <= constants.MAX_NODES; i++ {
+		wg.Add(1)
+		go func(serverID int) {
+			defer wg.Done()
+			client, err := sm.getServerClient(serverID)
+			if err != nil {
+				return
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+			defer cancel()
+			reply, err := client.Request(ctx, msg)
+			if err == nil && reply.GetError() == "" {
+				select {
+				//Todo for performance we can call ctx cancel for the other requests if needed
+				case replyChan <- reply:
+				default:
+				}
+			}
+		}(i)
+	}
+
+	wg.Wait()
+	close(replyChan)
+
+	if firstReply, ok := <-replyChan; ok {
+		return firstReply
+	}
+
+	return nil
 }
 
 // Good to have for performance
@@ -170,23 +233,32 @@ func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever s
 func (sm *serversData) getClientServerConn() (api.ClientServerTxnsClient, error) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
+	sm.lock.Lock()
+	serverID := sm.currLeader
+	sm.lock.Unlock()
+	return sm.getServerClient(serverID)
+}
+
+func (sm *serversData) getServerClient(serverId int) (api.ClientServerTxnsClient, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
 
 	sm.lock.Lock()
 	defer sm.lock.Unlock()
 
-	server, ok := sm.servers[sm.currLeader]
+	server, ok := sm.servers[serverId]
 	if !ok {
-		logs.Warnf("No server with id %d found in server map", sm.currLeader)
-		return nil, fmt.Errorf("server with ID %d not found", sm.currLeader)
+		logs.Warnf("No server with id %d found in server map", serverId)
+		return nil, fmt.Errorf("server with ID %d not found", serverId)
 	}
 
 	if server.conn == nil {
-		logs.Infof("Creating server %d connection for the first time", sm.currLeader)
-		address := fmt.Sprintf("localhost:%s", constants.ServerPorts[sm.currLeader])
+		logs.Infof("Creating server %d connection for the first time", serverId)
+		address := fmt.Sprintf("localhost:%s", constants.ServerPorts[serverId])
 		conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
-			logs.Fatalf("Could not connect to server %d: %v", sm.currLeader, err)
-			return nil, fmt.Errorf("Could not connect to server %d: %v", sm.currLeader, err)
+			logs.Fatalf("Could not connect to server %d: %v", serverId, err)
+			return nil, fmt.Errorf("Could not connect to server %d: %v", serverId, err)
 		}
 		server.conn = conn
 	}
@@ -290,6 +362,31 @@ func printlog(serverID int) {
 		logs.Infof("Server %d Log:", serverID)
 		for _, entry := range logStore.GetLogs() {
 			logs.Infof("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
+		}
+	}
+}
+
+func printView(serverID int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	client, err := getPrintClient(serverID)
+	if err != nil {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	viewHistory, err := client.PrintView(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("PrintView failed: %v", err)
+	} else {
+		logs.Infof("Server %d View History:", serverID)
+		for i, view := range viewHistory.GetViews() {
+			logs.Infof("*PRINT VIEW* - View %d: Leader <%d, %d>", i+1, view.GetBallotVal(), view.GetServerId())
+			for _, entry := range view.GetAcceptLog() {
+				logs.Infof("    - Seq: %d, From: %s, To: %s, Amt: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount())
+			}
 		}
 	}
 }

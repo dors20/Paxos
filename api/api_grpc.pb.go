@@ -306,7 +306,7 @@ type PaxosPrintInfoClient interface {
 	PrintDB(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Vault, error)
 	PrintStatus(ctx context.Context, in *RequestInfo, opts ...grpc.CallOption) (*Status, error)
 	// TODO after consensus is implemented
-	PrintView(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error)
+	PrintView(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*ViewLogs, error)
 }
 
 type paxosPrintInfoClient struct {
@@ -344,8 +344,8 @@ func (c *paxosPrintInfoClient) PrintStatus(ctx context.Context, in *RequestInfo,
 	return out, nil
 }
 
-func (c *paxosPrintInfoClient) PrintView(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error) {
-	out := new(Blank)
+func (c *paxosPrintInfoClient) PrintView(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*ViewLogs, error) {
+	out := new(ViewLogs)
 	err := c.cc.Invoke(ctx, "/api.PaxosPrintInfo/PrintView", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -361,7 +361,7 @@ type PaxosPrintInfoServer interface {
 	PrintDB(context.Context, *Blank) (*Vault, error)
 	PrintStatus(context.Context, *RequestInfo) (*Status, error)
 	// TODO after consensus is implemented
-	PrintView(context.Context, *Blank) (*Blank, error)
+	PrintView(context.Context, *Blank) (*ViewLogs, error)
 	mustEmbedUnimplementedPaxosPrintInfoServer()
 }
 
@@ -378,7 +378,7 @@ func (UnimplementedPaxosPrintInfoServer) PrintDB(context.Context, *Blank) (*Vaul
 func (UnimplementedPaxosPrintInfoServer) PrintStatus(context.Context, *RequestInfo) (*Status, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrintStatus not implemented")
 }
-func (UnimplementedPaxosPrintInfoServer) PrintView(context.Context, *Blank) (*Blank, error) {
+func (UnimplementedPaxosPrintInfoServer) PrintView(context.Context, *Blank) (*ViewLogs, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrintView not implemented")
 }
 func (UnimplementedPaxosPrintInfoServer) mustEmbedUnimplementedPaxosPrintInfoServer() {}

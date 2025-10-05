@@ -19,6 +19,7 @@ const MAX_NODES = 3
 // NETWORK CONFIG
 const LEADER_TIMEOUT_SECONDS = 10
 const REQUEST_TIMEOUT = 10 // TODO Set appropriate timeouts
+const FORWARD_TIMEOUT = 8
 const BASE_PORT = "9100"
 
 // STATE MACHINE CONFIG

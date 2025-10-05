@@ -92,6 +92,7 @@ type ServerImpl struct {
 	port          string
 	leaderBallot  *BallotNumber
 	leaderPulse   chan bool
+	viewLog       []*api.NewViewReq
 	api.UnimplementedClientServerTxnsServer
 	api.UnimplementedPaxosPrintInfoServer
 	api.UnimplementedPaxosReplicationServer
@@ -162,8 +163,9 @@ func startServer(id int, t time.Duration) {
 		state:         s, // TODO: Default state should be follower , Change to Leader for testing
 		clientManager: cm,
 		peerManager:   pm,
-		leaderBallot:  &BallotNumber{ballotVal: 0, serverID: id}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
+		leaderBallot:  &BallotNumber{ballotVal: 0, serverID: 0}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
 		leaderPulse:   make(chan bool, 1),
+		viewLog:       make([]*api.NewViewReq, 0),
 	}
 	server.port = constants.ServerPorts[id]
 	server.peerManager.initPeerConnections(server.id) // Note - not doing as a singleton on becoming first time leader for simplicity
@@ -244,13 +246,13 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 		logs.Infof("First request from client %s. Creating client cache", in.ClientId)
 	}
 
-	if in.GetTimestamp() < client.lastRequestTimeStamp {
-		logs.Warnf("Recieved a stale request from client-%s", in.ClientId)
-		s.clientManager.lock.Unlock()
-		return &api.Reply{Result: false, ServerId: int32(s.id), Error: "Invalid stale request"}, nil
-	}
+	// if in.GetTimestamp() < client.lastRequestTimeStamp {
+	// 	logs.Warnf("Recieved a stale request from client-%s", in.ClientId)
+	// 	s.clientManager.lock.Unlock()
+	// 	return &api.Reply{Result: false, ServerId: int32(s.id), Error: "Invalid stale request"}, nil
+	// }
 
-	if in.GetTimestamp() == client.lastRequestTimeStamp {
+	if in.GetTimestamp() <= client.lastRequestTimeStamp {
 		logs.Infof("Recieved duplicate request from client-%s", in.ClientId)
 		resp := client.lastResponse
 		s.clientManager.lock.Unlock()
@@ -261,21 +263,40 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 		return resp, nil
 	}
 	client.lastRequestTimeStamp = in.GetTimestamp()
-	client.lastResponse = nil
+	//client.lastResponse = nil
 	s.clientManager.lock.Unlock()
 
 	s.lock.Lock()
 	if s.state != constants.Leader {
-		logs.Warnf("Cannot process this transaction, not current cluster leader")
+		leaderID := s.leaderBallot.serverID
 		// TODO forwarding to current leader
 		s.lock.Unlock()
-		return &api.Reply{Result: false, ServerId: int32(s.id)}, nil
+		// Before first election or after recieving prepare from higher ballot
+		if leaderID == 0 || leaderID == s.id {
+			logs.Warnf("Cannot process this transaction, not current cluster leader and leader is unknown.")
+			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "NOT_LEADER"}, nil
+		}
+
+		logs.Infof("Forwarding request to perceived leader: %d", leaderID)
+		s.peerManager.lock.Lock()
+		leaderPeer, ok := s.peerManager.peers[leaderID]
+		s.peerManager.lock.Unlock()
+
+		if !ok {
+			logs.Warnf("No connection found for leader %d", leaderID)
+			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "NOT_LEADER"}, nil
+		}
+
+		client := api.NewClientServerTxnsClient(leaderPeer.conn)
+		forwardCtx, cancel := context.WithTimeout(context.Background(), constants.FORWARD_TIMEOUT*time.Second)
+		defer cancel()
+		return client.Request(forwardCtx, in)
 	}
 	s.seqNum++
 	currSeqNum := s.seqNum
 	record := &LogRecord{
 		seqNum: currSeqNum,
-		ballot: s.ballot,
+		ballot: &BallotNumber{ballotVal: int(s.ballot.ballotVal), serverID: s.id},
 		txn: &ClientRequestTxn{
 			sender:   in.Sender,
 			reciever: in.Receiver,
@@ -504,6 +525,19 @@ func (s *ServerImpl) PrintStatus(ctx context.Context, in *api.RequestInfo) (*api
 	return &api.Status{Status: api.TxnState_ACCEPTED}, nil
 }
 
+func (s *ServerImpl) PrintView(ctx context.Context, in *api.Blank) (*api.ViewLogs, error) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	historyCopy := make([]*api.NewViewReq, len(s.viewLog))
+	copy(historyCopy, s.viewLog)
+
+	return &api.ViewLogs{Views: historyCopy}, nil
+}
+
 func (pm *PeerManager) initPeerConnections(currServer int) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
@@ -626,12 +660,14 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 	}
 	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
 		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		s.lock.Unlock()
 		return &api.AcceptResp{Success: false}, nil
 	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
 		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		s.lock.Unlock()
 		return &api.AcceptResp{Success: false}, nil
 	}
-	s.leaderBallot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)}
+	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
 	s.lock.Unlock()
 
 	logStore.lock.Lock()
@@ -679,13 +715,15 @@ func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank,
 		}
 	}
 	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
-		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		logs.Warnf("Recieved Commit for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		s.lock.Unlock()
 		return &api.Blank{}, nil
 	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
-		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		logs.Warnf("Recieved Commit for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		s.lock.Unlock()
 		return &api.Blank{}, nil
 	}
-	s.leaderBallot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)}
+	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
 	s.lock.Unlock()
 	// Note: in runs/Commit_Before_Accept we recieved a commit message before the accept message. current
 	// hangling leaves a permanent hole that can't be repaired until a new-view message that makes this node faulty
@@ -740,14 +778,16 @@ func (s *ServerImpl) monitorLeader() {
 			if isFollower {
 				logs.Warn("Leader Timed out starting election")
 				s.startElection()
-			} else {
-				s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Second)
 			}
+
+			s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Second)
 
 		case <-s.leaderPulse:
 			if !s.leaderTimer.Stop() {
-				// Timer already expired
-				<-s.leaderTimer.C
+				select {
+				case <-s.leaderTimer.C:
+				default:
+				}
 			}
 			s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Second)
 		}
@@ -883,10 +923,10 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 	defer logs.Debug("Exit")
 	// Need to check if no other server had higher ballot?
 	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.state = constants.Leader
 	s.leaderBallot.ballotVal = int(ballotVal)
 	s.leaderBallot.serverID = int(s.id)
-	s.lock.Unlock()
 
 	logMap := make(map[int32]*api.LogRecord)
 	maxSeq := int32(0)
@@ -897,7 +937,7 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 			maxSeq = rec.GetSeqNum()
 		}
 
-		logsBySeqNum[rec.GetBallotVal()] = append(logsBySeqNum[rec.GetSeqNum()], rec)
+		logsBySeqNum[rec.GetSeqNum()] = append(logsBySeqNum[rec.GetSeqNum()], rec)
 	}
 
 	for i := int32(1); i <= maxSeq; i++ {
@@ -923,7 +963,7 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 				for _, r := range logsForSeq {
 					if r.GetBallotVal() > recWithHighestBallot.GetBallotVal() {
 						recWithHighestBallot = r
-					} else if r.GetBallotVal() == recWithHighestBallot.GetBallotVal() && r.GetServerId() < recWithHighestBallot.ServerId {
+					} else if r.GetBallotVal() == recWithHighestBallot.GetBallotVal() && r.GetServerId() > recWithHighestBallot.ServerId {
 						recWithHighestBallot = r
 					}
 				}
@@ -961,12 +1001,27 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 		AcceptLog: finalLog,
 	}
 
-	for _, peer := range s.peerManager.peers {
-		go func(p *Peer) {
+	s.viewLog = append(s.viewLog, newViewReq)
+	s.seqNum = int(maxSeq)
+	logStore.lock.Lock()
+
+	for _, rec := range logStore.records {
+		rec.ballot = &BallotNumber{ballotVal: ballotVal, serverID: s.id}
+
+	}
+
+	logStore.lock.Unlock()
+
+	for peerid, peer := range s.peerManager.peers {
+		go func(id int, p *Peer) {
 			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
 			defer cancel()
-			p.api.NewView(ctx, newViewReq)
-		}(peer)
+			_, err := p.api.NewView(ctx, newViewReq)
+			if err != nil {
+				logs.Warnf("Follower %d failed to accept New-View", peerid)
+			}
+
+		}(peerid, peer)
 	}
 }
 
@@ -977,14 +1032,23 @@ func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blan
 	logs.Infof("Received NewView from new leader <%d, %d>", in.GetBallotVal(), in.GetServerId())
 
 	s.lock.Lock()
-	s.leaderBallot.ballotVal = int(in.GetBallotVal())
-	s.leaderBallot.serverID = int(in.GetServerId())
+	defer s.lock.Unlock()
+	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
+		logs.Warnf("Recieved New-View for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		return &api.Blank{}, nil
+	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
+		logs.Warnf("Recieved View for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+		return &api.Blank{}, nil
+	}
+	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
+	s.leaderBallot.ballotVal = int(in.BallotVal)
+	s.leaderBallot.serverID = int(in.ServerId)
 	s.state = constants.Follower
+	s.viewLog = append(s.viewLog, in)
 	select {
 	case s.leaderPulse <- true:
 	default:
 	}
-	s.lock.Unlock()
 
 	logStore.lock.Lock()
 	defer logStore.lock.Unlock()
@@ -992,6 +1056,7 @@ func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blan
 		seqNum := int(newRecord.GetSeqNum())
 		if rec, ok := logStore.records[seqNum]; ok {
 			if rec.isExecuted || rec.isCommitted {
+				rec.ballot = &BallotNumber{ballotVal: int(newRecord.GetBallotVal()), serverID: int(newRecord.GetServerId())}
 				continue
 			}
 		}

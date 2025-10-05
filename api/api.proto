@@ -23,7 +23,7 @@ service PaxosPrintInfo {
     rpc PrintStatus(RequestInfo) returns (Status);
 
     //TODO after consensus is implemented
-    rpc PrintView(Blank) returns (Blank);
+    rpc PrintView(Blank) returns (ViewLogs);
 }
 
 message Message {
@@ -102,4 +102,8 @@ message NewViewReq {
     int32 ballotVal = 1;
     int32 serverId = 2; 
     repeated LogRecord acceptLog = 3; 
+}
+
+message ViewLogs {
+    repeated NewViewReq views = 1;
 }
