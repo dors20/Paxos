@@ -14,12 +14,12 @@ const (
 
 // SYSTEM CONFIG
 const MAX_CLIENTS = 10
-const MAX_NODES = 3
+const MAX_NODES = 5
 
 // NETWORK CONFIG
-const LEADER_TIMEOUT_SECONDS = 10
-const REQUEST_TIMEOUT = 10 // TODO Set appropriate timeouts
-const FORWARD_TIMEOUT = 10
+const LEADER_TIMEOUT_SECONDS = 1
+const REQUEST_TIMEOUT = 2 // TODO Set appropriate timeouts
+const FORWARD_TIMEOUT = 1
 const BASE_PORT = "9100"
 const PREPARE_TIMEOUT = 300
 

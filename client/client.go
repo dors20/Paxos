@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"context"
+	"encoding/csv"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -10,6 +13,7 @@ import (
 	"paxos/constants"
 	"paxos/logger"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -30,14 +34,40 @@ type serversData struct {
 	currLeader int
 }
 
+type TestCase struct {
+	Sender          string
+	Receiver        string
+	Amount          int
+	IsLeaderFailure bool
+}
+
+type TestSet struct {
+	SetNumber    int
+	Transactions []TestCase
+	LiveNodes    []int
+}
+
+type clientState struct {
+	lock      sync.Mutex
+	nextTxnID int64
+}
+
 var logs *zap.SugaredLogger
 var port string
 var sm *serversData
+var clientStateManager map[string]*clientState
+var lastPrintedViewIndex map[int]int
 
 func main() {
 	logs = logger.InitLogger(1, false)
 	logs.Debug("Client Started")
 	defer logs.Debug("Stopping Client")
+
+	if len(os.Args) < 2 {
+		logs.Fatalf("Usage: ./client_bin <path_to_csv_file>")
+	}
+
+	testFilePath := os.Args[1]
 
 	cmd := exec.Command("go", "build", "-o", "server_bin", "../server/")
 	err := cmd.Run()
@@ -50,6 +80,9 @@ func main() {
 		servers:    make(map[int]*serverInfo),
 		currLeader: constants.MAX_NODES,
 	}
+
+	clientStateManager = make(map[string]*clientState)
+	lastPrintedViewIndex = make(map[int]int)
 
 	for i := 1; i <= constants.MAX_NODES; i++ {
 
@@ -88,115 +121,281 @@ func main() {
 	}()
 
 	logs.Info("Waiting for servers to start")
-	time.Sleep(15 * time.Second)
+	fmt.Println("Waiting for servers to start")
+	time.Sleep(1 * time.Second)
 
 	logs.Info("Running test Cases")
-	run()
-	// TODO parse and run test cases
+	testSets, err := parseTestCases(testFilePath)
+	if err != nil {
+		logs.Fatalf("Failed to parse test cases from '%s': %v", testFilePath, err)
+	}
+	// run()
+	runCLI(testSets)
+	printServerStatus()
 	logs.Info("Completed all test cases")
 
 }
 
-func run() {
-	logs.Debug("Enter")
-	defer logs.Debug("Exit")
+func parseTestCases(filePath string) ([]TestSet, error) {
+	logs.Debug("enter")
+	defer logs.Debug("exit")
 
-	var wg sync.WaitGroup
-	wg.Add(7)
-	t := time.Now().UnixNano()
-	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
-	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "A", "B", 30, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "B", "A", 60, time.Now().UnixNano())
-	go sm.makeRequest(&wg, "A", "B", 25, time.Now().UnixNano())
-	wg.Wait()
-	// Duplicate request
-	time.Sleep(20 * time.Second)
-	var wg1 sync.WaitGroup
-	wg1.Add(1)
-	go sm.makeRequest(&wg1, "Alice", "Bob", 10, time.Now().UnixNano())
-	wg1.Wait()
-	time.Sleep(20 * time.Second)
-	var wg2 sync.WaitGroup
-	wg2.Add(3)
-	go sm.makeRequest(&wg2, "Mark", "jack", 30, time.Now().UnixNano())
-	go sm.makeRequest(&wg2, "jack", "Alice", 60, time.Now().UnixNano())
-	go sm.makeRequest(&wg2, "jack", "Bob", 25, time.Now().UnixNano())
-	wg2.Wait()
-	time.Sleep(30 * time.Second)
-	var wg3 sync.WaitGroup
-	wg3.Add(2)
-	go sm.makeRequest(&wg3, "jack", "jack", 60, time.Now().UnixNano())
-	go sm.makeRequest(&wg3, "zack", "cat", 25, time.Now().UnixNano())
-	wg3.Wait()
-	time.Sleep(5 * time.Second)
-	printReqStatus(1, 1)
-	printServerStatus(1)
-	printServerStatus(2)
-	printServerStatus(3)
-	printView(1)
-	printView(2)
-	printView(3)
-	logs.Info("All requests completed")
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	var testSets []TestSet
+	var currentSet *TestSet
+
+	if _, err := reader.Read(); err != nil {
+		return nil, err
+	}
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		setNumStr := strings.TrimSpace(record[0])
+		if setNumStr != "" {
+			if currentSet != nil {
+				testSets = append(testSets, *currentSet)
+			}
+			setNum, _ := strconv.Atoi(setNumStr)
+			currentSet = &TestSet{SetNumber: setNum}
+
+			nodesStr := strings.Trim(record[2], "[]")
+			nodeParts := strings.Split(nodesStr, ",")
+			for _, part := range nodeParts {
+				nodeIDStr := strings.TrimSpace(part)
+				nodeIDStr = strings.TrimPrefix(nodeIDStr, "n")
+				nodeID, err := strconv.Atoi(nodeIDStr)
+				if err == nil {
+					currentSet.LiveNodes = append(currentSet.LiveNodes, nodeID)
+				}
+			}
+		}
+
+		txnStr := strings.TrimSpace(record[1])
+		if txnStr == "" {
+			continue
+		}
+
+		if strings.ToUpper(txnStr) == "LF" {
+			currentSet.Transactions = append(currentSet.Transactions, TestCase{IsLeaderFailure: true})
+		} else {
+			content := strings.Trim(txnStr, "()")
+			parts := strings.Split(content, ",")
+			if len(parts) == 3 {
+				sender := strings.TrimSpace(parts[0])
+				receiver := strings.TrimSpace(parts[1])
+				amount, err := strconv.Atoi(strings.TrimSpace(parts[2]))
+				if err == nil {
+					currentSet.Transactions = append(currentSet.Transactions, TestCase{
+						Sender:   sender,
+						Receiver: receiver,
+						Amount:   amount,
+					})
+				}
+			}
+		}
+	}
+
+	if currentSet != nil {
+		testSets = append(testSets, *currentSet)
+	}
+
+	return testSets, nil
 }
 
-func (sm *serversData) makeRequest(wg *sync.WaitGroup, sender string, reciever string, amount int, timestamp int64) {
+func runCLI(testSets []TestSet) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
-	defer wg.Done()
 
-	logs.Infof("Sending transaction: %s -> %s, Amount: %d at time: %d", sender, reciever, amount, timestamp)
+	scanner := bufio.NewScanner(os.Stdin)
+	currentSetIndex := 0
 
-	msg := &api.Message{
+	fmt.Println("\n--- Paxos Client ---")
+	fmt.Println("Commands: next, printdb <id>, printlog <id>, printview <id>, printstatus <client> <txnid>, exit, help")
+
+	for {
+		fmt.Print("> ")
+		if !scanner.Scan() {
+			break
+		}
+		input := strings.Fields(scanner.Text())
+		if len(input) == 0 {
+			continue
+		}
+		command := input[0]
+
+		switch command {
+		case "next":
+			if currentSetIndex < len(testSets) {
+				executeTestSet(testSets[currentSetIndex])
+				currentSetIndex++
+			} else {
+				fmt.Println("All test sets have been executed.")
+			}
+		case "printdb":
+			if len(input) != 2 {
+				fmt.Println("Usage: printdb <server_id>")
+				continue
+			}
+			serverID, err := strconv.Atoi(input[1])
+			if err != nil || serverID < 1 || serverID > constants.MAX_NODES {
+				fmt.Println("Invalid server ID.")
+				continue
+			}
+			printDb(serverID)
+		case "printlog":
+			if len(input) != 2 {
+				fmt.Println("Usage: printlog <server_id>")
+				continue
+			}
+			serverID, err := strconv.Atoi(input[1])
+			if err != nil || serverID < 1 || serverID > constants.MAX_NODES {
+				fmt.Println("Invalid server ID.")
+				continue
+			}
+			printlog(serverID)
+		case "printview":
+			if len(input) != 2 {
+				fmt.Println("Usage: printview <server_id>")
+				continue
+			}
+			serverID, err := strconv.Atoi(input[1])
+			if err != nil || serverID < 1 || serverID > constants.MAX_NODES {
+				fmt.Println("Invalid server ID.")
+				continue
+			}
+			printView(serverID)
+		case "printstatus":
+			if len(input) != 2 {
+				fmt.Println("Usage: printstatus <server> <txn_id>")
+				continue
+			}
+			txnID, err := strconv.ParseInt(input[2], 10, 64)
+			if err != nil {
+				fmt.Println("Invalid transaction ID.")
+				continue
+			}
+			printStatus(txnID)
+		case "help":
+			fmt.Println("Commands:")
+			fmt.Println("  next                - Run the next test set from the CSV file.")
+			fmt.Println("  printdb <server_id> - Print the database (vault) of a specific server.")
+			fmt.Println("  printlog <server_id>- Print the transaction log of a specific server.")
+			fmt.Println("  printview <server_id>- Print new leader views seen by a server since the last call.")
+			fmt.Println("  printstatus <client_name> <txn_id> - Get status of a txn. Not implemented on server.")
+			fmt.Println("  exit                - Shut down servers and exit the client.")
+		case "exit":
+			return
+		default:
+			fmt.Println("Unknown command. Type 'help' for a list of commands.")
+		}
+	}
+}
+
+func executeTestSet(ts TestSet) {
+
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	logs.Infof("--- Executing Test Set %d ---", ts.SetNumber)
+	logs.Infof("Live nodes for this set: %v", ts.LiveNodes)
+
+	// Group transactions by sender to run them in dedicated goroutines
+	txnsBySender := make(map[string][]TestCase)
+	for _, txn := range ts.Transactions {
+		if txn.IsLeaderFailure {
+			sm.lock.Lock()
+			leaderID := sm.currLeader
+			logs.Infof("Current Leader is expected to be server-%d", leaderID)
+			sm.lock.Unlock()
+			// if s, ok := sm.servers[leaderID]; ok {
+			// 	logs.Warnf("Killing current leader: Server %d", leaderID)
+			// 	s.cmd.Process.Kill()
+			// }
+			continue
+		}
+		txnsBySender[txn.Sender] = append(txnsBySender[txn.Sender], txn)
+	}
+
+	var wg sync.WaitGroup
+	for sender, txns := range txnsBySender {
+		wg.Add(1)
+		go func(senderName string, transactions []TestCase) {
+			defer wg.Done()
+
+			if _, ok := clientStateManager[senderName]; !ok {
+				clientStateManager[senderName] = &clientState{nextTxnID: 1}
+			}
+			for _, txn := range transactions {
+				makeRequest(senderName, txn.Receiver, txn.Amount)
+			}
+		}(sender, txns)
+	}
+	wg.Wait()
+	logs.Infof("--- Finished Test Set %d ---", ts.SetNumber)
+	printViewAll()
+}
+
+func makeRequest(sender, receiver string, amount int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	cs := clientStateManager[sender]
+	cs.lock.Lock()
+	txnID := cs.nextTxnID
+	cs.nextTxnID++
+	cs.lock.Unlock()
+
+	req := &api.Message{
 		Sender:    sender,
-		Receiver:  reciever,
+		Receiver:  receiver,
 		Amount:    int32(amount),
-		Timestamp: timestamp,
 		ClientId:  sender,
-	}
-
-	conn, err := sm.getClientServerConn()
-	var reply *api.Reply
-
-	if err == nil {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*constants.REQUEST_TIMEOUT)
-		defer cancel()
-		reply, err = conn.Request(ctx, msg)
-	}
-	if err != nil || (reply != nil && reply.GetError() == "NOT_LEADER") {
-		logs.Warnf("Initial request failed or was sent to a non-leader. Broadcasting to all nodes. Error: %v", err)
-		reply = sm.broadcastRequest(msg)
-	}
-	if reply == nil {
-		logs.Warnf("Received a nil reply from the server after all attempts.")
-		return
-	}
-	if reply.GetError() != "" {
-		logs.Warnf("Recieved error from server; %s", reply.GetError())
-		return
-	} else {
-		logs.Infof("Recieved response with Success: %t and ballotVal: %d from server %d", reply.Result, reply.BallotVal, reply.ServerId)
+		Timestamp: txnID,
 	}
 
 	sm.lock.Lock()
-	if sm.currLeader != int(reply.ServerId) && reply.Result {
-		// TODO Maybe check for range
-		sm.currLeader = int(reply.ServerId)
-		logs.Infof("Detected new server cluster leader %d, using this server for future requests", sm.currLeader)
-	}
+	leaderID := sm.currLeader
 	sm.lock.Unlock()
+	client, err := sm.getClientServerConn()
+	if err != nil {
+		logs.Warnf("Could not get client for leader %d, attempting broadcast.", leaderID)
+		broadcastRequest(req)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+	defer cancel()
+
+	reply, err := client.Request(ctx, req)
+	if err != nil || (reply != nil && strings.Contains(reply.Error, "NOT_LEADER")) {
+		logs.Warnf("Request to leader %d failed or was rejected. Broadcasting to all servers.", leaderID)
+		broadcastRequest(req)
+	} else if reply != nil {
+		logs.Infof("Request %s- tnx-%d successful. Leader is %d. Result: %t", sender, txnID, reply.ServerId, reply.Result)
+		sm.lock.Lock()
+		sm.currLeader = int(reply.ServerId)
+		sm.lock.Unlock()
+	}
 }
 
-func (sm *serversData) broadcastRequest(msg *api.Message) *api.Reply {
-	logs.Debug("Enter")
-	defer logs.Debug("Exit")
-
-	replyChan := make(chan *api.Reply, constants.MAX_NODES)
+func broadcastRequest(req *api.Message) *api.Reply {
 	var wg sync.WaitGroup
+	replyChan := make(chan *api.Reply, constants.MAX_NODES)
 
-	for i := 1; i <= constants.MAX_NODES; i++ {
+	for id := range sm.servers {
 		wg.Add(1)
 		go func(serverID int) {
 			defer wg.Done()
@@ -206,24 +405,24 @@ func (sm *serversData) broadcastRequest(msg *api.Message) *api.Reply {
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
 			defer cancel()
-			reply, err := client.Request(ctx, msg)
-			if err == nil && reply.GetError() == "" {
-				select {
-				//Todo for performance we can call ctx cancel for the other requests if needed
-				case replyChan <- reply:
-				default:
-				}
+			if reply, err := client.Request(ctx, req); err == nil && reply != nil && !strings.Contains(reply.Error, "NOT_LEADER") {
+				replyChan <- reply
 			}
-		}(i)
+		}(id)
 	}
 
 	wg.Wait()
 	close(replyChan)
 
 	if firstReply, ok := <-replyChan; ok {
+		logs.Infof("Broadcast successful. Got reply from new leader %d for request %s-%d", firstReply.ServerId, req.ClientId, req.Timestamp)
+		sm.lock.Lock()
+		sm.currLeader = int(firstReply.ServerId)
+		sm.lock.Unlock()
 		return firstReply
 	}
 
+	logs.Errorf("Broadcast failed for request %s-%d. No server responded.", req.ClientId, req.Timestamp)
 	return nil
 }
 
@@ -292,14 +491,26 @@ func (sm *serversData) getConn(serverId int) error {
 	return nil
 }
 
-func printServerStatus(serverID int) {
+func printServerStatus() {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 
-	// Print DB
-	printDb(serverID)
-	// Print Log
-	printlog(serverID)
+	for i := 1; i <= constants.MAX_NODES; i++ {
+		// Print DB
+		printDb(i)
+		// Print Log
+		printlog(i)
+	}
+
+}
+
+func printStatus(seqnum int64) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	for i := 1; i <= constants.MAX_NODES; i++ {
+		printReqStatus(i, int(seqnum))
+	}
 
 }
 
@@ -320,6 +531,7 @@ func printReqStatus(serverID, seqNum int) {
 		logs.Warnf("PrintStatus failed: %v", err)
 	} else {
 		logs.Infof("*PRINTSTATUS* Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
+		fmt.Printf("*PRINTSTATUS* Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
 	}
 
 }
@@ -341,6 +553,7 @@ func printDb(serverID int) {
 		logs.Warnf("PrintDB failed: %v", err)
 	} else {
 		logs.Infof("*PRINT DB* Server %d Vault: %v", serverID, db.GetVault())
+		fmt.Printf("*PRINT DB* Server %d Vault: %v", serverID, db.GetVault())
 	}
 }
 
@@ -360,9 +573,20 @@ func printlog(serverID int) {
 		logs.Warnf("PrintLog failed: %v", err)
 	} else {
 		logs.Infof("Server %d Log:", serverID)
+		fmt.Printf("Server %d Log:", serverID)
 		for _, entry := range logStore.GetLogs() {
 			logs.Infof("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
+			fmt.Printf("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
 		}
+	}
+}
+
+func printViewAll() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+
+	for i := 1; i <= constants.MAX_NODES; i++ {
+		printView(i)
 	}
 }
 
@@ -379,14 +603,20 @@ func printView(serverID int) {
 
 	viewHistory, err := client.PrintView(ctx, &api.Blank{})
 	if err != nil {
-		logs.Warnf("PrintView failed: %v", err)
+		logs.Warnf("PrintView for server %d failed: %v", serverID, err)
 	} else {
-		logs.Infof("Server %d View History:", serverID)
-		for i, view := range viewHistory.GetViews() {
-			logs.Infof("*PRINT VIEW* - View %d: Leader <%d, %d>", i+1, view.GetBallotVal(), view.GetServerId())
-			for _, entry := range view.GetAcceptLog() {
-				logs.Infof("    - Seq: %d, From: %s, To: %s, Amt: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount())
+		allViews := viewHistory.GetViews()
+		lastIndex := lastPrintedViewIndex[serverID]
+		newViews := allViews[lastIndex:]
+
+		if len(newViews) > 0 {
+			fmt.Printf("--- New Leader Views (Server %d) ---\n", serverID)
+			for _, view := range newViews {
+				fmt.Printf("  - Leader <%d, %d> established.\n", view.GetBallotVal(), view.GetServerId())
 			}
+			lastPrintedViewIndex[serverID] = len(allViews) // Update the index
+		} else {
+			fmt.Printf("No new leader views for server %d since last check.\n", serverID)
 		}
 	}
 }
@@ -411,3 +641,48 @@ func getPrintClient(serverID int) (api.PaxosPrintInfoClient, error) {
 
 	return client, nil
 }
+
+// func run() {
+// 	logs.Debug("Enter")
+// 	defer logs.Debug("Exit")
+
+// 	var wg sync.WaitGroup
+// 	wg.Add(7)
+// 	t := time.Now().UnixNano()
+// 	go sm.makeRequest(&wg, "Alice", "Bob", 10, t)
+// 	go sm.makeRequest(&wg, "Alice", "Bob", 30, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg, "Bob", "Alice", 60, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg, "Alice", "Bob", 25, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg, "A", "B", 30, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg, "B", "A", 60, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg, "A", "B", 25, time.Now().UnixNano())
+// 	wg.Wait()
+// 	// Duplicate request
+// 	time.Sleep(20 * time.Second)
+// 	var wg1 sync.WaitGroup
+// 	wg1.Add(1)
+// 	go sm.makeRequest(&wg1, "Alice", "Bob", 10, time.Now().UnixNano())
+// 	wg1.Wait()
+// 	time.Sleep(20 * time.Second)
+// 	var wg2 sync.WaitGroup
+// 	wg2.Add(3)
+// 	go sm.makeRequest(&wg2, "Mark", "jack", 30, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg2, "jack", "Alice", 60, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg2, "jack", "Bob", 25, time.Now().UnixNano())
+// 	wg2.Wait()
+// 	time.Sleep(30 * time.Second)
+// 	var wg3 sync.WaitGroup
+// 	wg3.Add(2)
+// 	go sm.makeRequest(&wg3, "jack", "jack", 60, time.Now().UnixNano())
+// 	go sm.makeRequest(&wg3, "zack", "cat", 25, time.Now().UnixNano())
+// 	wg3.Wait()
+// 	time.Sleep(5 * time.Second)
+// 	printReqStatus(1, 1)
+// 	printServerStatus(1)
+// 	printServerStatus(2)
+// 	printServerStatus(3)
+// 	printView(1)
+// 	printView(2)
+// 	printView(3)
+// 	logs.Info("All requests completed")
+// }

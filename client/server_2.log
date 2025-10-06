@@ -1,107 +1,648 @@
-{"level":"info","ts":"2025-10-05T21:46:13.133307021Z","caller":"server/server.go:180","msg":"Successfully created connections for server-1","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:13.133376724Z","caller":"server/server.go:180","msg":"Successfully created connections for server-3","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:13.133394431Z","caller":"server/server.go:198","msg":"Server Initialized successfully with serverId: 2 and timer duration: 10000000000","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:13.133404305Z","caller":"runtime/proc.go:285","msg":"Server-2 is up and running. Waiting for requests on port 9112","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:13.133812481Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9112","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:13.133844061Z","caller":"runtime/asm_arm64.s:1268","msg":"Monitoring Leader for timeout expiration","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:46:23.13647353Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:23.13657398Z","caller":"server/server.go:800","msg":"Starting election with ballot <2, 2>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:23.137951159Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <2, 3>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:23.138023195Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 3>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:23.138034819Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <2, 3>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:23.139015822Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 1>","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:46:23.139025696Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148185905Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #5, with client txn <A,B,25,1759700788142956833>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148218736Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 5","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148283772Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #1, with client txn <Alice,Bob,25,1759700788142954708>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148293438Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 1","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148320019Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #4, with client txn <Bob,Alice,60,1759700788142953333>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.14832856Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 4","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148361891Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #3, with client txn <A,B,30,1759700788142955458>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148368682Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <2, 3> for seqNum: #2, with client txn <B,A,60,1759700788142956042>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148375515Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 3","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148397513Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 2","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148633577Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #2, with client txn <B,A,60,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148679406Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #1, with client txn <Alice,Bob,25,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148717945Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: Alice with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148725736Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: Bob with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148731027Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148728652Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #4, with client txn <Bob,Alice,60,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148736235Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: B with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148745151Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: A with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148751026Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148687531Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #5, with client txn <A,B,25,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148776273Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <2, 3> for seqNum: #3, with client txn <A,B,30,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148791856Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 3 and segNum 3","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.14879773Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 4 and segNum 4","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:28.148801855Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 5 and segNum 5","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:46:33.138151337Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:46:43.14653019Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:43.146625599Z","caller":"server/server.go:800","msg":"Starting election with ballot <3, 2>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:43.147047315Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <3, 1>","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:46:43.147068479Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <3,1>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:43.147186678Z","caller":"server/server.go:800","msg":"recieved promise from server-1","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:43.147197219Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.161786137Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Alice to Bob for amount 10","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.161837966Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client Alice. Creating client cache","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.16185434Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 6","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.162380505Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 6","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.162417002Z","caller":"server/server.go:333","msg":"Log with seqNum 6 commited","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.162433251Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 6 to be executed","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.162463123Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 6 and segNum 6","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.162484122Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 6, txn success: true ","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:48.162493704Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-Alice with request timestamp: 1759700808159272426","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:46:53.148357682Z","caller":"runtime/asm_arm64.s:1268","msg":"Failed to send Promise rpc to server-3 with error rpc error: code = DeadlineExceeded desc = stream terminated by RST_STREAM with error code: CANCEL","serverID":2}
-{"level":"info","ts":"2025-10-05T21:46:58.165973684Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <4, 3>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:03.148889528Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <4, 3>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:03.150429444Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <4, 3>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:03.150953693Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <5, 1>","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:47:03.150989481Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.168808634Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from Mark to jack for amount 30","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.168980495Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client Mark. Creating client cache","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.168808425Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from jack to Alice for amount 60","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.16901195Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 3","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.169042198Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client jack. Creating client cache","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.169088028Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 3","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.168832007Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from jack to Bob for amount 25","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.169176645Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 3","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.170362881Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <4, 3> for seqNum: #8, with client txn <Mark,jack,30,1759700828163992361>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.17040142Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <4, 3> for seqNum: #7, with client txn <jack,Alice,60,1759700828164004569>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.17040442Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 8","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.170523368Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 7","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.170730518Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <4, 3> for seqNum: #9, with client txn <jack,Bob,25,1759700828164006944>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.170751725Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 9","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.17184751Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <4, 3> for seqNum: #8, with client txn <Mark,jack,30,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171856259Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <4, 3> for seqNum: #9, with client txn <jack,Bob,25,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171892048Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <4, 3> for seqNum: #7, with client txn <jack,Alice,60,0>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171912588Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: jack with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171927003Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 7 and segNum 7","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171933461Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: Mark with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171938294Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 8 and segNum 8","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:08.171942377Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 9 and segNum 9","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:47:18.172188445Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:18.172488338Z","caller":"server/server.go:800","msg":"Starting election with ballot <5, 2>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:23.153180083Z","caller":"server/server.go:800","msg":"recieved promise from server-1","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:23.153238787Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:23.153282742Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <6, 1>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:23.153333154Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <6, 3>","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:47:33.15483397Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <6,1>","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178014961Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from zack to cat for amount 25","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178058124Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client zack. Creating client cache","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178078039Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 10","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178044709Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from jack to jack for amount 60","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178149575Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 11","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.17859833Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 11","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178618579Z","caller":"server/server.go:333","msg":"Log with seqNum 11 commited","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178634161Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 11 to be executed","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.17870453Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 10","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178719904Z","caller":"server/server.go:333","msg":"Log with seqNum 10 commited","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178729903Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 10 to be executed","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178776191Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: zack with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178825479Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: cat with 100","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178833436Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 10 and segNum 10","serverID":2}
-{"level":"warn","ts":"2025-10-05T21:47:38.178928137Z","caller":"server/server.go:368","msg":"Insufficient Balance for txn with commitIdx 11 and segNum 11","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.17894651Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 11, txn success: false ","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.178958884Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-jack with request timestamp: 1759700858173338800","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.179051835Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 10, txn success: true ","serverID":2}
-{"level":"info","ts":"2025-10-05T21:47:38.179075Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-zack with request timestamp: 1759700858173593529","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652090225Z","caller":"server/server.go:180","msg":"Successfully created connections for server-1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652141807Z","caller":"server/server.go:180","msg":"Successfully created connections for server-3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652156307Z","caller":"server/server.go:180","msg":"Successfully created connections for server-4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652177348Z","caller":"server/server.go:180","msg":"Successfully created connections for server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652184515Z","caller":"server/server.go:198","msg":"Server Initialized successfully with serverId: 2 and timer duration: 1000000000","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652188765Z","caller":"runtime/proc.go:285","msg":"Server-2 is up and running. Waiting for requests on port 9112","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652626215Z","caller":"runtime/proc.go:285","msg":"gRPC server listening at 9112","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:52.652665131Z","caller":"runtime/asm_arm64.s:1268","msg":"Monitoring Leader for timeout expiration","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:53.653419525Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:53.65367752Z","caller":"server/server.go:800","msg":"Starting election with ballot <2, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:53.66114218Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:53.661184388Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:53.661874959Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:53.661943833Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <2, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:54.653922548Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.654856522Z","caller":"runtime/asm_arm64.s:1268","msg":"Failed to send Promise rpc to server-5 with error rpc error: code = DeadlineExceeded desc = context deadline exceeded","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.655173309Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.655207475Z","caller":"runtime/asm_arm64.s:1268","msg":"Failed to send Promise rpc to server-4 with error rpc error: code = DeadlineExceeded desc = context deadline exceeded","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.655227141Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <2,4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.657533142Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <2,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.657546392Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <2, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.655257182Z","caller":"runtime/asm_arm64.s:1268","msg":"Failed to send Promise rpc to server-3 with error rpc error: code = DeadlineExceeded desc = context deadline exceeded","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.655250724Z","caller":"runtime/asm_arm64.s:1268","msg":"Failed to send Promise rpc to server-1 with error rpc error: code = DeadlineExceeded desc = context deadline exceeded","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.657555475Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <3, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.657563475Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.657857261Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <3, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.657865344Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.657877386Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <3, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.657881469Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.657892219Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <3, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:55.657895802Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.657920135Z","caller":"server/server.go:800","msg":"Suppressing prepare send: received a new prepare in last tp)","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:55.658990449Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <3, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:56.659400058Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:56.659458265Z","caller":"server/server.go:800","msg":"Starting election with ballot <4, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:56.660198169Z","caller":"server/server.go:800","msg":"recieved promise from server-4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:57.659148761Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <5, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:57.659178802Z","caller":"server/server.go:800","msg":"recieved promise from server-3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:57.659192844Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:57.659249759Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <5, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:57.659947164Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <4, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:58.659428247Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <4,5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:58.659677117Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <5,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:58.659757491Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <5, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:58.661437211Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <6, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:58.661477419Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:59.660252473Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:59.660354721Z","caller":"server/server.go:800","msg":"Starting election with ballot <6, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:59.661022459Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <5, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:59.661049125Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <5,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:59.661290371Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <5, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:24:59.661310287Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <5,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:59.662261187Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <7, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:59.662499641Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <7, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:24:59.663048798Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <6, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:00.660710413Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:01.661820509Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <7, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:01.661864009Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:01.66187305Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <7, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:01.661957257Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <7, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:01.661966673Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:01.662207419Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <7, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:02.662576361Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.662679026Z","caller":"server/server.go:800","msg":"Starting election with ballot <8, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.663929754Z","caller":"server/server.go:800","msg":"recieved promise from server-1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.664019836Z","caller":"server/server.go:800","msg":"recieved promise from server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.664037711Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.664274081Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <8, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:02.664284873Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <8,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800214054Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from A to J for amount 3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.80025147Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client A. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800251386Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from C to D for amount 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800267553Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client C. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800234928Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from F to G for amount 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800276844Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client F. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800281802Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from B to E for amount 4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800302552Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client B. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800257678Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800256261Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from H to I for amount 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800408133Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client H. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800407592Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800451133Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800953416Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.80096879Z","caller":"server/server.go:333","msg":"Log with seqNum 2 commited","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.800979623Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 2 to be executed","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801038247Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801049205Z","caller":"server/server.go:333","msg":"Log with seqNum 1 commited","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801057414Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 1 to be executed","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801077455Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801103163Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: A with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801109038Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: J with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801113288Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 1 and segNum 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801117121Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: C with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801126579Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: D with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801130037Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 2 and segNum 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801135204Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 2, txn success: true ","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801141162Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-C with request timestamp: 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801154162Z","caller":"server/server.go:319","msg":"Added record to log with seqNum 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.80127166Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 1, txn success: true ","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801286076Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-A with request timestamp: 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801866149Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801877233Z","caller":"server/server.go:333","msg":"Log with seqNum 5 commited","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801884024Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 5 to be executed","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801911315Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801917648Z","caller":"server/server.go:333","msg":"Log with seqNum 4 commited","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801924273Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 4 to be executed","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801961314Z","caller":"server/server.go:330","msg":"Qouram achieved for seqNum 3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801974439Z","caller":"server/server.go:333","msg":"Log with seqNum 3 commited","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.801995105Z","caller":"api/api_grpc.pb.go:79","msg":"Waiting for seqNum 3 to be executed","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802020605Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: F with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802024605Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: G with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802027855Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 3 and segNum 3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802031146Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: B with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.80203398Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: E with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802037855Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 4 and segNum 4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802040771Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: H with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.80204323Z","caller":"server/server.go:368","msg":"Detected new user, Initializing Balance for User: I with 100","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.80204598Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 5 and segNum 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802049354Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 5, txn success: true ","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802052979Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-H with request timestamp: 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802111312Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 3, txn success: true ","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802116478Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-F with request timestamp: 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802125186Z","caller":"api/api_grpc.pb.go:79","msg":"Execution completed for seqNum 4, txn success: true ","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:02.802135645Z","caller":"api/api_grpc.pb.go:79","msg":"Cached reply for client-B with request timestamp: 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:03.803747232Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <9, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:03.803855146Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <9, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:03.803921812Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <9, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:03.805143832Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <9, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:04.805853268Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:04.805906976Z","caller":"server/server.go:800","msg":"Starting election with ballot <10, 2>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:04.806081389Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <9,4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:04.806257095Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <9,3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:04.806289052Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <9,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:04.806459633Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <10, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:04.80648559Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <10,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:04.807270118Z","caller":"server/server.go:800","msg":"recieved promise from server-1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:04.807467906Z","caller":"server/server.go:800","msg":"recieved promise from server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:04.807486948Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:05.809384238Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <11, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:05.809411279Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <11, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:05.809583151Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <11, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:05.809597443Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:05.809691108Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <11, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:05.809703691Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:05.810543384Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <11, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:06.811291153Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:06.811349652Z","caller":"server/server.go:800","msg":"Starting election with ballot <12, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:06.811824019Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <12, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:06.811840102Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <12,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:06.812575381Z","caller":"server/server.go:800","msg":"recieved promise from server-1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:06.812591672Z","caller":"server/server.go:800","msg":"recieved promise from server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:06.812598588Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:07.814641585Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <13, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:07.814699709Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <13, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:07.815117368Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <13, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:07.815133201Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:07.815331447Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <13, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:07.815348864Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:07.816473927Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <13, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:08.818084223Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <14, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:08.818295511Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:08.81830301Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <14, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:08.818971082Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <14, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:09.820364589Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <15, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:09.820577794Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <15, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:09.821770481Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:09.821804564Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <15, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:09.821819147Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <15, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:09.821856021Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:09.82196552Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:09.823199164Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <15, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:10.824481966Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <16, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:10.824756627Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:10.82479846Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <16, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:10.825240452Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <16, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:11.825486209Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:11.825613749Z","caller":"server/server.go:800","msg":"Starting election with ballot <17, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:11.82642586Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <17, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:11.826457901Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <17, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:11.827978251Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <17, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:11.828070624Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <17, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:11.828080541Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:12.826330945Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:12.829432704Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <18, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:12.829637244Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <18, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:12.830123239Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <18, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:13.831093205Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:13.831174538Z","caller":"server/server.go:800","msg":"Starting election with ballot <19, 2>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:13.831395118Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <18,1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:13.831452659Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <18,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:13.83205561Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <19, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:13.832083652Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <19, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:13.832124818Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <19, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:13.832136651Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:13.833141347Z","caller":"server/server.go:800","msg":"recieved promise from server-3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:13.833628425Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <19, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:14.833773007Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:14.835861854Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <20, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.1722577Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from J to C for amount 4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.17232824Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client J. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.172338199Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.1722577Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from B to I for amount 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.172436406Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.174107382Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from B to I for amount 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.17412534Z","caller":"api/api_grpc.pb.go:79","msg":"Recieved duplicate request from client-B","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.174171631Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from J to C for amount 4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.174179422Z","caller":"api/api_grpc.pb.go:79","msg":"Recieved duplicate request from client-J","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.834416762Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <21, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.835044461Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <20, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:15.835053878Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:15.835171126Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <21, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:15.835269208Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:16.835534536Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:16.83621536Z","caller":"server/server.go:800","msg":"Starting election with ballot <22, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:16.836364774Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <21, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:16.836393315Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <21,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:16.83660702Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <22, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:16.839067651Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <22,1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:17.836904904Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:17.839685528Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <21, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:17.840179896Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <22, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:18.837613711Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:18.83767421Z","caller":"server/server.go:800","msg":"Starting election with ballot <23, 2>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:18.838114245Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <22,3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:18.838225243Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <21,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:18.838249326Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <23, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:18.838279659Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <23, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:18.840960242Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <23, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:19.838020223Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:19.842288446Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <24, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:19.84233207Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <24, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.551951787Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from C to A for amount 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.551976162Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.552052452Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from B to F for amount 3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.552060119Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:20.838152597Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:20.838182722Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <24,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.838247179Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <24, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.838563674Z","caller":"server/server.go:800","msg":"Starting election with ballot <25, 2>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:20.839533742Z","caller":"runtime/asm_arm64.s:1268","msg":"Failed to send Promise rpc to server-3 with error rpc error: code = DeadlineExceeded desc = context deadline exceeded","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.839744655Z","caller":"server/server.go:800","msg":"recieved promise from server-3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:20.840668015Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <24, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:21.840220689Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:21.842545026Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <26, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:21.842599816Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <25, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:21.844466869Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <26, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:22.845364063Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:22.845392271Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <27, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:22.845805764Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <27, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:22.845903512Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <27, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:22.845917929Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:22.84594372Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:22.845976094Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:22.846004677Z","caller":"server/server.go:800","msg":"Suppressing prepare send: received a new prepare in last tp)","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:22.846829997Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <27, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:23.847544142Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:23.847617849Z","caller":"server/server.go:800","msg":"Starting election with ballot <28, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:23.848050758Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <28, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:23.848091716Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <28, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:23.848917202Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <28, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:23.848966493Z","caller":"server/server.go:800","msg":"recieved promise from server-4","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:24.850300804Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:24.850373844Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <29, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:24.850388594Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <29, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:24.850414343Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <29, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:24.850954918Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <29, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228281697Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <29, 5> for seqNum: #6, with client txn <B,F,3,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228352279Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 6","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228436611Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <29, 5> for seqNum: #7, with client txn <A,H,3,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228449653Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 7","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228730564Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <29, 5> for seqNum: #7, with client txn <A,H,3,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228789022Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <29, 5> for seqNum: #6, with client txn <B,F,3,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228809313Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 6 and segNum 6","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:25.228817021Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 7 and segNum 7","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:26.229847143Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <29,4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:26.22980531Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:26.229995015Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <29,1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:26.230017598Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <29,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:26.229959474Z","caller":"server/server.go:800","msg":"Starting election with ballot <30, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:26.230298302Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <30, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:26.230338926Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <30, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:26.852841698Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <31, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:26.855583777Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <30, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:27.230888978Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.352851596Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <30, 3> for seqNum: #9, with client txn <C,B,1,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.352878971Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 9","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.35294222Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-3 with ballot <30, 3> for seqNum: #8, with client txn <D,F,2,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.35295622Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 8","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.35390012Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <30, 3> for seqNum: #8, with client txn <D,F,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.353939245Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 8 and segNum 8","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.353963536Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-3 with ballot <30, 3> for seqNum: #9, with client txn <C,B,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:27.353985286Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 9 and segNum 9","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:28.354861553Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <31, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:28.355185089Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:28.355223089Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <31,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:28.35524588Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <31, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:28.854016535Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <32, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:28.855940085Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <31, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567024495Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-1 with ballot <31, 1> for seqNum: #12, with client txn <I,D,2,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567072035Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-1 with ballot <31, 1> for seqNum: #11, with client txn <E,J,2,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567035369Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-1 with ballot <31, 1> for seqNum: #10, with client txn <A,B,4,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567072244Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 12","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567424654Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 11","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567456446Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 10","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567875147Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-1 with ballot <31, 1> for seqNum: #10, with client txn <A,B,4,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.567906188Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 10 and segNum 10","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.568963545Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-1 with ballot <31, 1> for seqNum: #11, with client txn <E,J,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.568993211Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 11 and segNum 11","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.569039961Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-1 with ballot <31, 1> for seqNum: #12, with client txn <I,D,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:29.569057669Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 12 and segNum 12","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:30.570194103Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <33, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:30.570316643Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <33, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:30.570399641Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:30.570430391Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <33, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:30.570574097Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:30.570615263Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:30.855870333Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <33, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.66588135Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <33, 5> for seqNum: #15, with client txn <G,H,1,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.665909558Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 15","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.665957724Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <33, 5> for seqNum: #14, with client txn <J,A,2,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.665969807Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 14","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.665991765Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <33, 5> for seqNum: #13, with client txn <F,A,2,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.666001807Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 13","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.66660388Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <33, 5> for seqNum: #13, with client txn <F,A,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.66662613Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 13 and segNum 13","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.666648796Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <33, 5> for seqNum: #14, with client txn <J,A,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.666668337Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 14 and segNum 14","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.666684004Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <33, 5> for seqNum: #15, with client txn <G,H,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:31.666705295Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 15 and segNum 15","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:32.66823812Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <34, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:32.668356577Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <34, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:32.668500116Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <34, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:32.668632822Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:32.668661238Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <34,1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:32.668700654Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <34,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:32.668736112Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <34, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:32.669984799Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <34, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:33.670309265Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:33.670401888Z","caller":"server/server.go:800","msg":"Starting election with ballot <35, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:33.671948362Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <35, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:33.671976237Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <35, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:33.672349147Z","caller":"server/server.go:800","msg":"recieved promise from server-4","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.671020386Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <36, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.671194841Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <36, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.671207466Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <35, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:34.672999561Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953114378Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <35, 5> for seqNum: #21, with client txn <I,B,2,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953153752Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 21","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953215584Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <35, 5> for seqNum: #17, with client txn <E,A,3,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953226376Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 17","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953249167Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <35, 5> for seqNum: #16, with client txn <C,D,2,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953260833Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 16","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953293583Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <35, 5> for seqNum: #18, with client txn <J,B,1,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953301833Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 18","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953323249Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <35, 5> for seqNum: #19, with client txn <G,H,2,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953330749Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 19","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953359623Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <35, 5> for seqNum: #20, with client txn <F,A,2,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.953367248Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 20","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954336607Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <35, 5> for seqNum: #18, with client txn <J,B,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954397439Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <35, 5> for seqNum: #19, with client txn <G,H,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954420939Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <35, 5> for seqNum: #20, with client txn <F,A,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.95444098Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <35, 5> for seqNum: #17, with client txn <E,A,3,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954498188Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <35, 5> for seqNum: #21, with client txn <I,B,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.95453877Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <35, 5> for seqNum: #16, with client txn <C,D,2,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954560353Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 16 and segNum 16","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954567395Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 17 and segNum 17","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954572603Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 18 and segNum 18","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954577353Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 19 and segNum 19","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954581186Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 20 and segNum 20","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:34.954584686Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 21 and segNum 21","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:35.954816395Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <36,1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:35.954782979Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:35.954960892Z","caller":"server/server.go:800","msg":"Starting election with ballot <36, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:35.954980059Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <36, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.672283539Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <37, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.673075651Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <36, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.673130816Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <36, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.831799973Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from A to J for amount 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.831841264Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.832053635Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from C to H for amount 3","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.832069218Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.833779148Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from E to D for amount 1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.83380273Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client E. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.833808314Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.83469834Z","caller":"api/api_grpc.pb.go:79","msg":"Received transaction from G to I for amount 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.834802922Z","caller":"api/api_grpc.pb.go:79","msg":"First request from client G. Creating client cache","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.834822713Z","caller":"api/api_grpc.pb.go:79","msg":"Forwarding request to perceived leader: 5","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:36.955366429Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:36.957250356Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <37, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:37.957365646Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:37.957401979Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <36,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:37.957547643Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <37, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:37.957644891Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:37.957668974Z","caller":"server/server.go:800","msg":"Starting election with ballot <38, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:37.958211423Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <38, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:37.958225257Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:37.958471669Z","caller":"server/server.go:800","msg":"recieved promise from server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:38.675378196Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <38, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:38.675891937Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <38, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:38.677102542Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <38, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:38.95864504Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:39.678685847Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <39, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:39.95976127Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:39.959822894Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <38,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:39.959989766Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <39, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:39.96007789Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:39.960846585Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <39, 5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438401233Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #29, with client txn <G,H,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438440149Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 29","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.43852219Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #22, with client txn <D,E,1,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438536565Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 22","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438645313Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #23, with client txn <H,I,1,2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438657562Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 23","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438706062Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #31, with client txn <A,B,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438714645Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 31","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438737811Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #24, with client txn <E,F,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438766727Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 24","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438854392Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #26, with client txn <I,J,1,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438864309Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 26","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438890184Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #25, with client txn <F,G,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.438897433Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 25","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.439019556Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #30, with client txn <J,A,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.439039598Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 30","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.439075847Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #27, with client txn <B,C,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.439085805Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 27","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.439115221Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #28, with client txn <C,D,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.439123138Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 28","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.441889841Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #27, with client txn <B,C,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.442181045Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #28, with client txn <C,D,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.442268585Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #22, with client txn <D,E,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.442288876Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 22 and segNum 22","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.442310084Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #29, with client txn <G,H,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.442348125Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #30, with client txn <J,A,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444346883Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #33, with client txn <D,E,1,0>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:40.444374508Z","caller":"api/api_grpc.pb.go:225","msg":"Commit received for seqNum #33 before Accept. Creating log entry.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444408965Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #32, with client txn <A,B,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444407632Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #24, with client txn <E,F,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444416132Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 32","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444433632Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #31, with client txn <A,B,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44444559Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #33, with client txn <D,E,1,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444453215Z","caller":"api/api_grpc.pb.go:207","msg":"Accept for seq #33 already committed/executed, ignoring.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444455631Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #25, with client txn <F,G,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444470589Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #35, with client txn <I,J,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444474881Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #26, with client txn <I,J,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444476673Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 35","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444500297Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #32, with client txn <A,B,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444537005Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #38, with client txn <C,D,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444543796Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 38","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44455038Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #40, with client txn <B,C,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444559046Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 40","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444347841Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #23, with client txn <H,I,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444580296Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #37, with client txn <F,G,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444580671Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 23 and segNum 23","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444603962Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 24 and segNum 24","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444609045Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 25 and segNum 25","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444612629Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 26 and segNum 26","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44461617Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 27 and segNum 27","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444620129Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 28 and segNum 28","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444623795Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 29 and segNum 29","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444627212Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 30 and segNum 30","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444630212Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 31 and segNum 31","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444637628Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 32 and segNum 32","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44464092Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 33 and segNum 33","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44464542Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 37","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444647961Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #39, with client txn <E,F,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.444656711Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 39","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.445337575Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #36, with client txn <H,I,1,3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.4453477Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 36","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.445373782Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #34, with client txn <G,H,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.445380116Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 34","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446420765Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #43, with client txn <D,E,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446434973Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 43","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446486722Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #39, with client txn <E,F,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446547471Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #40, with client txn <B,C,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446705552Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #36, with client txn <H,I,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44673151Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #38, with client txn <C,D,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446754842Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #41, with client txn <J,A,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446761426Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 41","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446786759Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #34, with client txn <G,H,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446796717Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 34 and segNum 34","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446811133Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #42, with client txn <A,B,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446816633Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 42","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446834966Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #37, with client txn <F,G,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446858007Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #35, with client txn <I,J,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446866799Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 35 and segNum 35","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446871757Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 36 and segNum 36","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446875299Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 37 and segNum 37","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446878965Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 38 and segNum 38","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446882632Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 39 and segNum 39","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446886257Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 40 and segNum 40","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446928131Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #41, with client txn <J,A,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.446937548Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 41 and segNum 41","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.448051237Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #46, with client txn <G,H,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.448121653Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #43, with client txn <D,E,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.448138569Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #45, with client txn <J,A,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.448188568Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #44, with client txn <I,J,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.448062862Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 46","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.44827965Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 45","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.448291108Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 44","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.449802749Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #45, with client txn <J,A,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.449942747Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #47, with client txn <E,F,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.449967955Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 47","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.449997496Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #48, with client txn <H,I,1,4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450004996Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 48","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450026621Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #49, with client txn <F,G,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45003262Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 49","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45006287Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #50, with client txn <C,D,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450086536Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 50","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450107536Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #51, with client txn <B,C,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450113161Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 51","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45013166Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #42, with client txn <A,B,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450147827Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 42 and segNum 42","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450154035Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 43 and segNum 43","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450168077Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #44, with client txn <I,J,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450177326Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 44 and segNum 44","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450181951Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 45 and segNum 45","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450194868Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #46, with client txn <G,H,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.450203076Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 46 and segNum 46","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451046312Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #47, with client txn <E,F,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451066186Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 47 and segNum 47","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451085436Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #48, with client txn <H,I,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451095103Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 48 and segNum 48","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451108019Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #51, with client txn <B,C,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451123644Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #49, with client txn <F,G,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45113156Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 49 and segNum 49","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451143852Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #50, with client txn <C,D,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45115081Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 50 and segNum 50","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.451160226Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 51 and segNum 51","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.454908955Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #53, with client txn <C,D,1,9>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.454941996Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 53","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.454977079Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #55, with client txn <E,F,1,0>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:40.454987537Z","caller":"api/api_grpc.pb.go:225","msg":"Commit received for seqNum #55 before Accept. Creating log entry.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.454991912Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #54, with client txn <B,C,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.454999453Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 54","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455002495Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #55, with client txn <E,F,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455012995Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #52, with client txn <F,G,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45501387Z","caller":"api/api_grpc.pb.go:207","msg":"Accept for seq #55 already committed/executed, ignoring.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455024161Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 52","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455062869Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #59, with client txn <A,B,1,0>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:40.455071285Z","caller":"api/api_grpc.pb.go:225","msg":"Commit received for seqNum #59 before Accept. Creating log entry.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455090827Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #56, with client txn <J,A,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455104202Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 56","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455122285Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #58, with client txn <D,E,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45512691Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 58","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455141451Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #59, with client txn <A,B,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455146118Z","caller":"api/api_grpc.pb.go:207","msg":"Accept for seq #59 already committed/executed, ignoring.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455157659Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #60, with client txn <I,J,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455161742Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 60","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455177659Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #61, with client txn <G,H,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455186409Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 61","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455224366Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #57, with client txn <H,I,1,0>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:40.455232866Z","caller":"api/api_grpc.pb.go:225","msg":"Commit received for seqNum #57 before Accept. Creating log entry.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455277532Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #61, with client txn <G,H,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455298198Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #53, with client txn <C,D,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45530374Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #57, with client txn <H,I,1,5>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455312823Z","caller":"api/api_grpc.pb.go:207","msg":"Accept for seq #57 already committed/executed, ignoring.","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455315406Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #60, with client txn <I,J,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455330073Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #58, with client txn <D,E,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455344448Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #52, with client txn <F,G,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455351447Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 52 and segNum 52","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455426529Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 53 and segNum 53","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455405863Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #54, with client txn <B,C,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455331073Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #56, with client txn <J,A,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455443196Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 54 and segNum 54","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455446821Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 55 and segNum 55","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455450321Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 56 and segNum 56","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455453321Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 57 and segNum 57","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455455904Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 58 and segNum 58","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455458321Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 59 and segNum 59","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455460779Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 60 and segNum 60","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.455463196Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 61 and segNum 61","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45607906Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #62, with client txn <G,H,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.456090018Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 62","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45676134Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #62, with client txn <G,H,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.456792715Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 62 and segNum 62","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.456969503Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #70, with client txn <B,C,1,9>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45697942Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 70","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457567827Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #68, with client txn <J,A,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457578493Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 68","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457599534Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #69, with client txn <I,J,1,7>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457604493Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 69","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457619867Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #67, with client txn <C,D,1,10>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457624534Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 67","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457935029Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #63, with client txn <H,I,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457942654Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 63","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457958237Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #64, with client txn <F,G,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457962112Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 64","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457974195Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #65, with client txn <E,F,1,8>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45797832Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 65","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457989736Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #66, with client txn <D,E,1,6>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.457993486Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 66","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.458132359Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #68, with client txn <J,A,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.458544102Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #63, with client txn <H,I,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.458545018Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #69, with client txn <I,J,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.458558268Z","caller":"api/api_grpc.pb.go:207","msg":"Recieved accept RPC from Server-5 with ballot <39, 5> for seqNum: #71, with client txn <A,B,1,9>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.458565393Z","caller":"server/server.go:705","msg":"Added record to log with seqNum 71","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45857931Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 63 and segNum 63","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.459929953Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #65, with client txn <E,F,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.459951578Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #64, with client txn <F,G,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.459961828Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 64 and segNum 64","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.45996562Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 65 and segNum 65","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.460002369Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #66, with client txn <D,E,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.46001441Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 66 and segNum 66","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.46002941Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #67, with client txn <C,D,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.460037618Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 67 and segNum 67","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.460047618Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 68 and segNum 68","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.46005091Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 69 and segNum 69","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.460098492Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #71, with client txn <A,B,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.460111242Z","caller":"api/api_grpc.pb.go:225","msg":"Recieved commit RPC from Server-5 with ballot <39, 5> for seqNum: #70, with client txn <B,C,1,0>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.460356238Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 70 and segNum 70","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:40.46036078Z","caller":"server/server.go:368","msg":"Successfully applied txn with commitIdx 71 and segNum 71","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:41.462460492Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <40, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:41.462496158Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:41.46252374Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <40, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:41.462846985Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <40, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:41.462857943Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:41.463708845Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <40, 3>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:42.464174418Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.464286749Z","caller":"server/server.go:800","msg":"Starting election with ballot <41, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.465478813Z","caller":"server/server.go:800","msg":"recieved promise from server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.465491812Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <41, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.46553627Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <41, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.465634727Z","caller":"server/server.go:800","msg":"recieved promise from server-1","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.465650685Z","caller":"server/server.go:800","msg":"Server-2 achieved election quorom with ballotVal 2","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:42.46603197Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <41, 1>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:42.466043303Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:43.46869313Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <42, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:43.468723796Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <42, 4>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:43.469035707Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <42, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:43.469049291Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:44.467657269Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <42, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:44.468143177Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <42, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:45.468275463Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out starting election","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:45.468316712Z","caller":"api/api_grpc.pb.go:243","msg":"Rejecting Prepare <42,1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:45.468479001Z","caller":"server/server.go:800","msg":"Starting election with ballot <43, 2>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:45.470635673Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <43, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:45.470663964Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <43, 3>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:45.471964609Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <43, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:45.471990317Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:45.472160356Z","caller":"server/server.go:800","msg":"recieved promise from server-5","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:46.470145302Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <44, 1>","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:46.470791041Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <43, 4>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:46.473206376Z","caller":"server/server.go:800","msg":"Election timed out, if still in candidate state need to revert to follower","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:47.471582232Z","caller":"api/api_grpc.pb.go:243","msg":"Received Prepare request with ballot <45, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:47.47382157Z","caller":"runtime/asm_arm64.s:1268","msg":"Leader Timed out but PREPARE seen in last tp","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:47.473848527Z","caller":"api/api_grpc.pb.go:243","msg":"Promising for ballot <45, 5>","serverID":2}
+{"level":"warn","ts":"2025-10-05T23:25:47.473952651Z","caller":"api/api_grpc.pb.go:243","msg":"Prepare rejected: already promised in this expiry window","serverID":2}
+{"level":"info","ts":"2025-10-05T23:25:47.474340269Z","caller":"api/api_grpc.pb.go:261","msg":"Received NewView from new leader <45, 5>","serverID":2}
