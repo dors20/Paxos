@@ -433,7 +433,7 @@ func broadcastRequest(req *api.Message) *api.Reply {
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 			defer cancel()
-			if reply, err := client.Request(ctx, req); err == nil && reply != nil && !strings.Contains(reply.Error, "NOT_LEADER") {
+			if reply, err := client.Request(ctx, req); err == nil && reply != nil && !strings.Contains(reply.Error, "NOT_LEADER") && reply.Result == true {
 				replyChan <- reply
 			}
 		}(id)
@@ -443,14 +443,15 @@ func broadcastRequest(req *api.Message) *api.Reply {
 	close(replyChan)
 
 	if firstReply, ok := <-replyChan; ok {
-		logs.Infof("Broadcast successful. Got reply from new leader %d for request %s-%d", firstReply.ServerId, req.ClientId, req.Timestamp)
+		logs.Infof("Broadcast done. Got reply %v for request %s-%d", firstReply.Result, req.ClientId, req.Timestamp)
 		sm.lock.Lock()
 		sm.currLeader = int(firstReply.ServerId)
 		sm.lock.Unlock()
 		return firstReply
+	} else {
+		logs.Debugf("Broadcast failed for request %s-%d. No server responded.", req.ClientId, req.Timestamp)
 	}
 
-	logs.Errorf("Broadcast failed for request %s-%d. No server responded.", req.ClientId, req.Timestamp)
 	return nil
 }
 

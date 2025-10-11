@@ -101,7 +101,6 @@ type ServerImpl struct {
 	isPromised      bool
 	isRunning       bool
 	switchLock      sync.Mutex
-	runNotify       *sync.Cond
 	api.UnimplementedClientServerTxnsServer
 	api.UnimplementedPaxosPrintInfoServer
 	api.UnimplementedPaxosReplicationServer
@@ -181,7 +180,6 @@ func startServer(id int, t time.Duration) {
 		isRunning:       true,
 	}
 	server.port = constants.ServerPorts[id]
-	server.runNotify = sync.NewCond(&server.switchLock)
 	server.peerManager.initPeerConnections(server.id) // Note - not doing as a singleton on becoming first time leader for simplicity
 	sm.startExec()
 	go server.monitorLeader()
@@ -202,7 +200,7 @@ func main() {
 
 	leaderTimeout := constants.LEADER_TIMEOUT_SECONDS * time.Millisecond
 	startServer(serverId, leaderTimeout)
-	logs.Infof("Server-%d is up and running. Waiting for requests on port %s", serverId, server.port)
+	logs.Infof("Server-%d is up and running. Waiting for requests on port %s XXXXXXXXXX", serverId, server.port)
 
 	// Starting grpc server
 	addr := fmt.Sprintf(":%s", server.port)
@@ -244,7 +242,9 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 
 	logs.Debug("Entry")
 	defer logs.Debug("Exit")
-	s.checkServerStatus()
+	if !s.isServerRunning() {
+		return &api.Reply{Result: false, ServerId: int32(s.id), Error: "SERVER_DOWN"}, s.downErr()
+	}
 
 	logs.Infof("Received transaction from %s to %s for amount %d", in.Sender, in.Receiver, in.Amount)
 
@@ -335,14 +335,24 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 	// TODO NEED to Handle on follower side, if its already accepted this message then it should still reply
 	// Need to check if this server is still leader and if not we need to insert no-op in that log index
 	for !ok {
-
-		ok = s.peerManager.broadcastAccept(quorum, record, in.GetTimestamp())
 		s.lock.Lock()
 		isLeader := s.state == constants.Leader
-		s.lock.Unlock()
+
 		if !isLeader {
-			break
+			s.lock.Unlock()
+			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "NOT_LEADER"}, nil
 		}
+		if !s.isServerRunning() {
+			s.lock.Unlock()
+			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "SERVER_DOWN"}, s.downErr()
+		}
+		if s.ballot.ballotVal < s.leaderBallot.ballotVal || (s.ballot.ballotVal == s.leaderBallot.ballotVal && s.id < s.leaderBallot.serverID) {
+			s.state = constants.Follower
+			s.lock.Unlock()
+			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "NOT_LEADER"}, s.downErr()
+		}
+		s.lock.Unlock()
+		ok = s.peerManager.broadcastAccept(quorum, record, in.GetTimestamp())
 
 	}
 
@@ -676,7 +686,9 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 
-	s.checkServerStatus()
+	if !s.isServerRunning() {
+		return &api.AcceptResp{Success: false}, s.downErr()
+	}
 
 	// TODO maybe check if we are current leader, if me have multiple leader we need to reject incoming requests
 	s.lock.Lock()
@@ -697,7 +709,6 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 		return &api.AcceptResp{Success: false}, nil
 	}
 	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
-
 	s.lock.Unlock()
 	if in.Sender == "HEARTBEAT" {
 		return &api.AcceptResp{Success: true}, nil
@@ -738,7 +749,10 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank, error) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
-	s.checkServerStatus()
+	if !s.isServerRunning() {
+		return &api.Blank{}, s.downErr()
+	}
+
 	logs.Infof("Recieved commit RPC from Server-%d with ballot <%d, %d> for seqNum: #%d, with client txn <%s,%s,%d,%d>", in.GetServerId(), in.GetBallotVal(), in.GetServerId(), in.GetSeqNum(), in.GetSender(), in.GetReceiver(), in.GetAmount(), in.GetTimestamp())
 
 	s.lock.Lock()
@@ -802,21 +816,16 @@ func (s *ServerImpl) monitorLeader() {
 	defer logs.Debug("Exit")
 
 	logs.Info("Monitoring Leader for timeout expiration")
-
+	tpTimer := time.NewTimer(s.tp)
 	for {
-		s.checkServerStatus()
+		if !s.isServerRunning() {
+			continue
+		}
 		select {
 		case <-s.leaderTimer.C:
 			s.lock.Lock()
 			isFollower := (s.state == constants.Follower)
 			s.isPromised = false
-			close(s.prepareChan)
-			go func() {
-				time.Sleep(5 * time.Millisecond)
-				s.lock.Lock()
-				s.prepareChan = make(chan struct{})
-				s.lock.Unlock()
-			}()
 			timeElapsed := time.Since(s.lastPrepareRecv)
 			tp := s.tp
 			s.lock.Unlock()
@@ -839,14 +848,26 @@ func (s *ServerImpl) monitorLeader() {
 				}
 			}
 			s.leaderTimer.Reset(constants.LEADER_TIMEOUT_SECONDS * time.Millisecond)
+		case <-tpTimer.C:
+			s.lock.Lock()
+			s.isPromised = false
+			close(s.prepareChan)
+			// time.Sleep(5 * time.Millisecond)
+			s.prepareChan = make(chan struct{})
+			s.lock.Unlock()
+			tpTimer.Reset(s.tp)
+
 		}
+
 	}
 }
 
 func (s *ServerImpl) startElection() {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
-	s.checkServerStatus()
+	if !s.isServerRunning() {
+		return
+	}
 
 	s.lock.Lock()
 	if time.Since(s.lastPrepareRecv) < s.tp {
@@ -872,12 +893,14 @@ func (s *ServerImpl) startElection() {
 
 	for _, peer := range s.peerManager.peers {
 		go func(p *Peer) {
-			s.checkServerStatus()
+			if !s.isServerRunning() {
+				return
+			}
 			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 			defer cancel()
 			resp, err := p.api.Prepare(ctx, &prepareReq)
 			if err != nil {
-				logs.Warnf("Failed to send Promise rpc to server-%d with error %v", p.id, err)
+				logs.Warnf("Failed to recieve prepare rpc to server-%d with error %v", p.id, err)
 				return
 			}
 
@@ -927,7 +950,9 @@ func (s *ServerImpl) startElection() {
 func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.PromiseResp, error) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
-	s.checkServerStatus()
+	if !s.isServerRunning() {
+		return &api.PromiseResp{}, s.downErr()
+	}
 	s.lock.Lock()
 	inBallot := in.GetBallotVal()
 	inServerID := in.GetServerId()
@@ -971,6 +996,9 @@ func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.Prom
 		s.state = constants.Follower
 		s.isPromised = true
 
+		s.leaderBallot.ballotVal = int(inBallot)
+		s.leaderBallot.serverID = int(inServerID)
+
 		select {
 		case s.leaderPulse <- true:
 		default:
@@ -1009,6 +1037,9 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 	// Need to check if no other server had higher ballot?
+	if !s.isServerRunning() {
+		return
+	}
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.state = constants.Leader
@@ -1110,12 +1141,48 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 
 		}(peerid, peer)
 	}
+
+	go s.redoConsensus()
+}
+
+func (s *ServerImpl) redoConsensus() {
+
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	if !s.isServerRunning() {
+		return
+	}
+	quorum := int((constants.MAX_NODES / 2) + 1)
+	logStore.lock.Lock()
+	defer logStore.lock.Unlock()
+	for _, rec := range logStore.records {
+		go func(q int, rec *LogRecord) {
+			ok := false
+			for !ok {
+
+				ok = s.peerManager.broadcastAccept(quorum, rec, time.Now().Unix())
+				s.lock.Lock()
+				isLeader := s.state == constants.Leader
+				s.lock.Unlock()
+				if !isLeader || !s.isServerRunning() {
+					break
+				}
+
+			}
+			logStore.markCommitted(rec.seqNum)
+			sm.applyTxn()
+			s.peerManager.broadcastCommit(rec)
+		}(quorum, rec)
+
+	}
 }
 
 func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blank, error) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
-	s.checkServerStatus()
+	if !s.isServerRunning() {
+		return &api.Blank{}, s.downErr()
+	}
 	logs.Infof("Received NewView from new leader <%d, %d>", in.GetBallotVal(), in.GetServerId())
 
 	s.lock.Lock()
@@ -1213,21 +1280,18 @@ func (s *ServerImpl) RecoverNode(ctx context.Context, in *api.Blank) (*api.Blank
 	s.switchLock.Lock()
 	defer s.switchLock.Unlock()
 	s.isRunning = true
-	s.runNotify.Broadcast()
 	logs.Warn("RECOVERED: SERVER IS NOW RESPONSIVE ")
 	return &api.Blank{}, nil
 }
 
-func (s *ServerImpl) checkServerStatus() {
-	logs.Debug("Enter")
-	defer logs.Debug("Exit")
-
+func (s *ServerImpl) isServerRunning() bool {
 	s.switchLock.Lock()
 	defer s.switchLock.Unlock()
+	return s.isRunning
+}
 
-	for !s.isRunning {
-		s.runNotify.Wait()
-	}
+func (s *ServerImpl) downErr() error {
+	return fmt.Errorf("SERVER_DOWN")
 }
 
 func (s *ServerImpl) startHeartbeat() {
@@ -1238,7 +1302,9 @@ func (s *ServerImpl) startHeartbeat() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		s.checkServerStatus()
+		if !s.isServerRunning() {
+			continue
+		}
 		s.lock.Lock()
 		isLeader := s.state == constants.Leader
 		if isLeader {

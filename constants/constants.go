@@ -17,15 +17,15 @@ const MAX_CLIENTS = 10
 const MAX_NODES = 5
 
 // NETWORK CONFIG
-const LEADER_TIMEOUT_SECONDS = 800
-const REQUEST_TIMEOUT = 500 // TODO Set appropriate timeouts
+const LEADER_TIMEOUT_SECONDS = 1000
+const REQUEST_TIMEOUT = 800 // TODO Set appropriate timeouts
 const FORWARD_TIMEOUT = 400
 const BASE_PORT = "9100"
 const PREPARE_TIMEOUT = 200
 const HEARTBEAT = 100
 
 // STATE MACHINE CONFIG
-const INITIAL_BALANCE = 100 // TODO spec mentions 10, using 100 for now easier to analyze logs
+const INITIAL_BALANCE = 10 // TODO spec mentions 10, using 100 for now easier to analyze logs
 const NOOP = "no-op"
 
 // LOGGER
