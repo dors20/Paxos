@@ -6,6 +6,9 @@ option go_package = "/api";
 
 service ClientServerTxns {
     rpc Request(Message) returns (Reply);
+    rpc SimulateNodeFailure(Blank) returns (Blank);
+    rpc SimulateLeaderFailure(Blank) returns (Blank);
+    rpc RecoverNode(Blank) returns (Blank);
 }
 
 service PaxosReplication {

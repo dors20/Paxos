@@ -12,6 +12,7 @@ import (
 	"paxos/api"
 	"paxos/constants"
 	"paxos/logger"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -57,6 +58,7 @@ var port string
 var sm *serversData
 var clientStateManager map[string]*clientState
 var lastPrintedViewIndex map[int]int
+var cm sync.Mutex
 
 func main() {
 	logs = logger.InitLogger(1, false)
@@ -189,7 +191,7 @@ func parseTestCases(filePath string) ([]TestSet, error) {
 		}
 
 		if strings.ToUpper(txnStr) == "LF" {
-			currentSet.Transactions = append(currentSet.Transactions, TestCase{IsLeaderFailure: true})
+			currentSet.Transactions = append(currentSet.Transactions, TestCase{Sender: "LF", Receiver: "LF", Amount: 0, IsLeaderFailure: true})
 		} else {
 			content := strings.Trim(txnStr, "()")
 			parts := strings.Split(content, ",")
@@ -223,7 +225,7 @@ func runCLI(testSets []TestSet) {
 	currentSetIndex := 0
 
 	fmt.Println("\n--- Paxos Client ---")
-	fmt.Println("Commands: next, printdb <id>, printlog <id>, printview <id>, printstatus <client> <txnid>, exit, help")
+	fmt.Println("Commands: next, printdb <id>, printlog <id>, printview <id>, printstatus  <txnid>, exit, help")
 
 	for {
 		fmt.Print("> ")
@@ -244,6 +246,8 @@ func runCLI(testSets []TestSet) {
 			} else {
 				fmt.Println("All test sets have been executed.")
 			}
+		case "all":
+			printAll()
 		case "printdb":
 			if len(input) != 2 {
 				fmt.Println("Usage: printdb <server_id>")
@@ -279,10 +283,10 @@ func runCLI(testSets []TestSet) {
 			printView(serverID)
 		case "printstatus":
 			if len(input) != 2 {
-				fmt.Println("Usage: printstatus <server> <txn_id>")
+				fmt.Println("Usage: printstatus  <txn_id>")
 				continue
 			}
-			txnID, err := strconv.ParseInt(input[2], 10, 64)
+			txnID, err := strconv.ParseInt(input[1], 10, 64)
 			if err != nil {
 				fmt.Println("Invalid transaction ID.")
 				continue
@@ -308,25 +312,35 @@ func executeTestSet(ts TestSet) {
 
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
+	recoverServer()
 
 	logs.Infof("--- Executing Test Set %d ---", ts.SetNumber)
 	logs.Infof("Live nodes for this set: %v", ts.LiveNodes)
 
+	var wgFailure sync.WaitGroup
+	for id := range sm.servers {
+		simFailure := true
+		if slices.Contains(ts.LiveNodes, id) {
+			simFailure = false
+		}
+
+		if simFailure {
+			wgFailure.Add(1)
+			go func(serverID int) {
+				defer wgFailure.Done()
+				simulateFailure(serverID)
+			}(id)
+		}
+	}
+	wgFailure.Wait()
 	// Group transactions by sender to run them in dedicated goroutines
 	txnsBySender := make(map[string][]TestCase)
 	for _, txn := range ts.Transactions {
 		if txn.IsLeaderFailure {
-			sm.lock.Lock()
-			leaderID := sm.currLeader
-			logs.Infof("Current Leader is expected to be server-%d", leaderID)
-			sm.lock.Unlock()
-			// if s, ok := sm.servers[leaderID]; ok {
-			// 	logs.Warnf("Killing current leader: Server %d", leaderID)
-			// 	s.cmd.Process.Kill()
-			// }
-			continue
+			txnsBySender["LF"] = append(txnsBySender["LF"], txn)
+		} else {
+			txnsBySender[txn.Sender] = append(txnsBySender[txn.Sender], txn)
 		}
-		txnsBySender[txn.Sender] = append(txnsBySender[txn.Sender], txn)
 	}
 
 	var wg sync.WaitGroup
@@ -334,12 +348,24 @@ func executeTestSet(ts TestSet) {
 		wg.Add(1)
 		go func(senderName string, transactions []TestCase) {
 			defer wg.Done()
+			if senderName == "LF" {
+				for range transactions {
+					sm.lock.Lock()
+					leaderID := sm.currLeader
+					logs.Infof("Current Leader is expected to be server-%d", leaderID)
+					sm.lock.Unlock()
+					simulateLeaderFailure(leaderID)
+				}
 
-			if _, ok := clientStateManager[senderName]; !ok {
-				clientStateManager[senderName] = &clientState{nextTxnID: 1}
-			}
-			for _, txn := range transactions {
-				makeRequest(senderName, txn.Receiver, txn.Amount)
+			} else {
+				cm.Lock()
+				if _, ok := clientStateManager[senderName]; !ok {
+					clientStateManager[senderName] = &clientState{nextTxnID: 1}
+				}
+				cm.Unlock()
+				for _, txn := range transactions {
+					makeRequest(senderName, txn.Receiver, txn.Amount)
+				}
 			}
 		}(sender, txns)
 	}
@@ -352,7 +378,9 @@ func makeRequest(sender, receiver string, amount int) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 
+	cm.Lock()
 	cs := clientStateManager[sender]
+	cm.Unlock()
 	cs.lock.Lock()
 	txnID := cs.nextTxnID
 	cs.nextTxnID++
@@ -376,7 +404,7 @@ func makeRequest(sender, receiver string, amount int) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 	defer cancel()
 
 	reply, err := client.Request(ctx, req)
@@ -403,7 +431,7 @@ func broadcastRequest(req *api.Message) *api.Reply {
 			if err != nil {
 				return
 			}
-			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 			defer cancel()
 			if reply, err := client.Request(ctx, req); err == nil && reply != nil && !strings.Contains(reply.Error, "NOT_LEADER") {
 				replyChan <- reply
@@ -523,7 +551,7 @@ func printReqStatus(serverID, seqNum int) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 	defer cancel()
 
 	status, err := client.PrintStatus(ctx, &api.RequestInfo{SeqNum: int32(seqNum)})
@@ -531,7 +559,7 @@ func printReqStatus(serverID, seqNum int) {
 		logs.Warnf("PrintStatus failed: %v", err)
 	} else {
 		logs.Infof("*PRINTSTATUS* Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
-		fmt.Printf("*PRINTSTATUS* Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
+		//fmt.Printf("*PRINTSTATUS* Server %d Status for Seq #%d: %s", serverID, seqNum, status.GetStatus().String())
 	}
 
 }
@@ -545,7 +573,7 @@ func printDb(serverID int) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 	defer cancel()
 
 	db, err := client.PrintDB(ctx, &api.Blank{})
@@ -553,7 +581,7 @@ func printDb(serverID int) {
 		logs.Warnf("PrintDB failed: %v", err)
 	} else {
 		logs.Infof("*PRINT DB* Server %d Vault: %v", serverID, db.GetVault())
-		fmt.Printf("*PRINT DB* Server %d Vault: %v", serverID, db.GetVault())
+		//fmt.Printf("*PRINT DB* Server %d Vault: %v", serverID, db.GetVault())
 	}
 }
 
@@ -565,7 +593,7 @@ func printlog(serverID int) {
 	if err != nil {
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 	defer cancel()
 
 	logStore, err := client.PrintLog(ctx, &api.Blank{})
@@ -573,11 +601,20 @@ func printlog(serverID int) {
 		logs.Warnf("PrintLog failed: %v", err)
 	} else {
 		logs.Infof("Server %d Log:", serverID)
-		fmt.Printf("Server %d Log:", serverID)
+		//fmt.Printf("Server %d Log:", serverID)
 		for _, entry := range logStore.GetLogs() {
 			logs.Infof("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
-			fmt.Printf("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
+			//fmt.Printf("*PRINT LOGS* - Seq: %d, From: %s, To: %s, Amt: %d, Committed: %t, ballotVal: %d, serverID: %d", entry.GetSeqNum(), entry.GetSender(), entry.GetReceiver(), entry.GetAmount(), entry.GetIsCommitted(), entry.GetBallotVal(), entry.ServerId)
 		}
+	}
+}
+
+func printAll() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	for id := range sm.servers {
+		printDb(id)
+		printlog(id)
 	}
 }
 
@@ -598,7 +635,7 @@ func printView(serverID int) {
 	if err != nil {
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
 	defer cancel()
 
 	viewHistory, err := client.PrintView(ctx, &api.Blank{})
@@ -640,6 +677,70 @@ func getPrintClient(serverID int) (api.PaxosPrintInfoClient, error) {
 	client := api.NewPaxosPrintInfoClient(server.conn)
 
 	return client, nil
+}
+
+func simulateFailure(serverId int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	client, err := sm.getServerClient(serverId)
+	if err != nil {
+		logs.Warnf("Failed to Simulate Failure for server-%d", serverId)
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
+	defer cancel()
+	_, err = client.SimulateNodeFailure(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("Failed to Simulate Failure for server-%d with error: %v", serverId, err)
+	} else {
+		logs.Infof("Simulated server-%d Failure", serverId)
+	}
+}
+
+func simulateLeaderFailure(serverId int) {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	client, err := sm.getServerClient(serverId)
+	if err != nil {
+		logs.Warnf("Failed to Simulate Failure for server-%d", serverId)
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
+	defer cancel()
+	_, err = client.SimulateNodeFailure(ctx, &api.Blank{})
+	if err != nil {
+		logs.Warnf("Failed to Simulate Failure for server-%d with error: %v", serverId, err)
+	} else {
+		logs.Infof("Simulated server-%d Failure", serverId)
+	}
+}
+
+func recoverServer() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	var wg sync.WaitGroup
+
+	for id := range sm.servers {
+		wg.Add(1)
+		go func(serverID int) {
+			defer wg.Done()
+
+			client, err := sm.getServerClient(id)
+			if err != nil {
+				logs.Warnf("Failed to recover server-%d", id)
+				return
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), constants.REQUEST_TIMEOUT*time.Millisecond)
+			defer cancel()
+			_, err = client.RecoverNode(ctx, &api.Blank{})
+			if err != nil {
+				logs.Warnf("Failed to recover server-%d with error: %v", id, err)
+			} else {
+				logs.Infof("recovered server-%d ", id)
+			}
+		}(id)
+	}
+	wg.Wait()
 }
 
 // func run() {

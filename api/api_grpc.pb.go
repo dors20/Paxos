@@ -23,6 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ClientServerTxnsClient interface {
 	Request(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Reply, error)
+	SimulateNodeFailure(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error)
+	SimulateLeaderFailure(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error)
+	RecoverNode(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error)
 }
 
 type clientServerTxnsClient struct {
@@ -42,11 +45,41 @@ func (c *clientServerTxnsClient) Request(ctx context.Context, in *Message, opts 
 	return out, nil
 }
 
+func (c *clientServerTxnsClient) SimulateNodeFailure(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error) {
+	out := new(Blank)
+	err := c.cc.Invoke(ctx, "/api.ClientServerTxns/SimulateNodeFailure", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServerTxnsClient) SimulateLeaderFailure(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error) {
+	out := new(Blank)
+	err := c.cc.Invoke(ctx, "/api.ClientServerTxns/SimulateLeaderFailure", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServerTxnsClient) RecoverNode(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*Blank, error) {
+	out := new(Blank)
+	err := c.cc.Invoke(ctx, "/api.ClientServerTxns/RecoverNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ClientServerTxnsServer is the server API for ClientServerTxns service.
 // All implementations must embed UnimplementedClientServerTxnsServer
 // for forward compatibility
 type ClientServerTxnsServer interface {
 	Request(context.Context, *Message) (*Reply, error)
+	SimulateNodeFailure(context.Context, *Blank) (*Blank, error)
+	SimulateLeaderFailure(context.Context, *Blank) (*Blank, error)
+	RecoverNode(context.Context, *Blank) (*Blank, error)
 	mustEmbedUnimplementedClientServerTxnsServer()
 }
 
@@ -56,6 +89,15 @@ type UnimplementedClientServerTxnsServer struct {
 
 func (UnimplementedClientServerTxnsServer) Request(context.Context, *Message) (*Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Request not implemented")
+}
+func (UnimplementedClientServerTxnsServer) SimulateNodeFailure(context.Context, *Blank) (*Blank, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SimulateNodeFailure not implemented")
+}
+func (UnimplementedClientServerTxnsServer) SimulateLeaderFailure(context.Context, *Blank) (*Blank, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SimulateLeaderFailure not implemented")
+}
+func (UnimplementedClientServerTxnsServer) RecoverNode(context.Context, *Blank) (*Blank, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecoverNode not implemented")
 }
 func (UnimplementedClientServerTxnsServer) mustEmbedUnimplementedClientServerTxnsServer() {}
 
@@ -88,6 +130,60 @@ func _ClientServerTxns_Request_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClientServerTxns_SimulateNodeFailure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Blank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServerTxnsServer).SimulateNodeFailure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ClientServerTxns/SimulateNodeFailure",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServerTxnsServer).SimulateNodeFailure(ctx, req.(*Blank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClientServerTxns_SimulateLeaderFailure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Blank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServerTxnsServer).SimulateLeaderFailure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ClientServerTxns/SimulateLeaderFailure",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServerTxnsServer).SimulateLeaderFailure(ctx, req.(*Blank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClientServerTxns_RecoverNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Blank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServerTxnsServer).RecoverNode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.ClientServerTxns/RecoverNode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServerTxnsServer).RecoverNode(ctx, req.(*Blank))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ClientServerTxns_ServiceDesc is the grpc.ServiceDesc for ClientServerTxns service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +194,18 @@ var ClientServerTxns_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Request",
 			Handler:    _ClientServerTxns_Request_Handler,
+		},
+		{
+			MethodName: "SimulateNodeFailure",
+			Handler:    _ClientServerTxns_SimulateNodeFailure_Handler,
+		},
+		{
+			MethodName: "SimulateLeaderFailure",
+			Handler:    _ClientServerTxns_SimulateLeaderFailure_Handler,
+		},
+		{
+			MethodName: "RecoverNode",
+			Handler:    _ClientServerTxns_RecoverNode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
