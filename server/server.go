@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"maps"
 	"net"
 	"os"
 	"paxos/api"
@@ -23,29 +25,30 @@ import (
 // Current Ballot of server
 // should be in initialized to (1,serverID)
 type BallotNumber struct {
-	ballotVal int
-	serverID  int
+	BallotVal int `json:"ballotval"`
+	ServerID  int `json:"serverId"`
 }
 
 // Clien send m <sender, reciever, amt>
 type ClientRequestTxn struct {
-	sender   string
-	reciever string
-	amount   int
+	Sender   string `json:"sender"`
+	Reciever string `json:"reciever"`
+	Amount   int    `json:"amount"`
 }
 
 // Structure of a single record that will be stored in this servers log
 type LogRecord struct {
-	seqNum      int
-	ballot      *BallotNumber
-	txn         *ClientRequestTxn
-	isCommitted bool
-	isExecuted  bool
+	SeqNum      int               `json:"seqNum"`
+	Ballot      *BallotNumber     `json:"ballot"`
+	Txn         *ClientRequestTxn `json:"txn"`
+	IsCommitted bool              `json:"committed"`
+	IsExecuted  bool              `json:"exececuted"`
 }
 
 type LogStore struct {
-	lock    sync.Mutex
-	records map[int]*LogRecord
+	lock     sync.Mutex
+	records  map[int]*LogRecord
+	logsPath string
 }
 
 // Just stores client balances and process newly committed transactions
@@ -140,7 +143,8 @@ func startServer(id int, t time.Duration) {
 	defer logs.Debug("Exit")
 
 	logStore = &LogStore{
-		records: make(map[int]*LogRecord),
+		records:  make(map[int]*LogRecord),
+		logsPath: fmt.Sprintf("logstore_%d.json", id),
 	}
 
 	cm := &ClientImpl{
@@ -165,13 +169,13 @@ func startServer(id int, t time.Duration) {
 
 	server = &ServerImpl{
 		id:              id,
-		ballot:          &BallotNumber{ballotVal: 1, serverID: id},
+		ballot:          &BallotNumber{BallotVal: 1, ServerID: id},
 		seqNum:          0,
 		leaderTimer:     time.NewTimer(t),
 		state:           s, // TODO: Default state should be follower , Change to Leader for testing
 		clientManager:   cm,
 		peerManager:     pm,
-		leaderBallot:    &BallotNumber{ballotVal: 0, serverID: 0}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
+		leaderBallot:    &BallotNumber{BallotVal: 0, ServerID: 0}, // TODO: Maybe make  it <1,server_id> Note : We will on the first happy path always elect <1,5>
 		leaderPulse:     make(chan bool, 1),
 		viewLog:         make([]*api.NewViewReq, 0),
 		tp:              constants.PREPARE_TIMEOUT * time.Millisecond,
@@ -181,6 +185,7 @@ func startServer(id int, t time.Duration) {
 	}
 	server.port = constants.ServerPorts[id]
 	server.peerManager.initPeerConnections(server.id) // Note - not doing as a singleton on becoming first time leader for simplicity
+	logStore.unmarshal()
 	sm.startExec()
 	go server.monitorLeader()
 	go server.startHeartbeat()
@@ -284,7 +289,7 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 
 	s.lock.Lock()
 	if s.state != constants.Leader {
-		leaderID := s.leaderBallot.serverID
+		leaderID := s.leaderBallot.ServerID
 		// TODO forwarding to current leader
 		s.lock.Unlock()
 		// Before first election or after recieving prepare from higher ballot
@@ -312,14 +317,14 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 	s.seqNum++
 	currSeqNum := s.seqNum
 	record := &LogRecord{
-		seqNum: currSeqNum,
-		ballot: &BallotNumber{ballotVal: int(s.ballot.ballotVal), serverID: s.id},
-		txn: &ClientRequestTxn{
-			sender:   in.Sender,
-			reciever: in.Receiver,
-			amount:   int(in.Amount),
+		SeqNum: currSeqNum,
+		Ballot: &BallotNumber{BallotVal: int(s.ballot.BallotVal), ServerID: s.id},
+		Txn: &ClientRequestTxn{
+			Sender:   in.Sender,
+			Reciever: in.Receiver,
+			Amount:   int(in.Amount),
 		},
-		isCommitted: false,
+		IsCommitted: false,
 	}
 	// NOTE - need to unlock here otherwise we are doing sequential processing
 	s.lock.Unlock()
@@ -346,7 +351,7 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 			s.lock.Unlock()
 			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "SERVER_DOWN"}, s.downErr()
 		}
-		if s.ballot.ballotVal < s.leaderBallot.ballotVal || (s.ballot.ballotVal == s.leaderBallot.ballotVal && s.id < s.leaderBallot.serverID) {
+		if s.ballot.BallotVal < s.leaderBallot.BallotVal || (s.ballot.BallotVal == s.leaderBallot.BallotVal && s.id < s.leaderBallot.ServerID) {
 			s.state = constants.Follower
 			s.lock.Unlock()
 			return &api.Reply{Result: false, ServerId: int32(s.id), Error: "NOT_LEADER"}, s.downErr()
@@ -366,7 +371,7 @@ func (s *ServerImpl) Request(ctx context.Context, in *api.Message) (*api.Reply, 
 
 	s.lock.Lock()
 	reply := &api.Reply{
-		BallotVal: int32(s.ballot.ballotVal),
+		BallotVal: int32(s.ballot.BallotVal),
 		ServerId:  int32(s.id),
 		Timestamp: in.GetTimestamp(),
 		ClientId:  in.GetClientId(),
@@ -409,11 +414,11 @@ func (sm *StateMachine) execCommitLogs() {
 		nextCommitIdx := sm.lastExecutedCommitNum + 1
 		logToApply, ok := logStore.records[nextCommitIdx]
 
-		if !ok || !logToApply.isCommitted {
+		if !ok || !logToApply.IsCommitted {
 			break
 		}
-		sender := logToApply.txn.sender
-		reciever := logToApply.txn.reciever
+		sender := logToApply.Txn.Sender
+		reciever := logToApply.Txn.Reciever
 
 		if _, ok := sm.vault[sender]; !ok {
 			sm.vault[sender] = constants.INITIAL_BALANCE
@@ -425,21 +430,21 @@ func (sm *StateMachine) execCommitLogs() {
 		}
 
 		var res bool
-		if sm.vault[sender] >= logToApply.txn.amount {
-			sm.vault[sender] -= logToApply.txn.amount
-			sm.vault[reciever] += logToApply.txn.amount
+		if sm.vault[sender] >= logToApply.Txn.Amount {
+			sm.vault[sender] -= logToApply.Txn.Amount
+			sm.vault[reciever] += logToApply.Txn.Amount
 			res = true
-			logs.Infof("Successfully applied txn with commitIdx %d and segNum %d", nextCommitIdx, logToApply.seqNum)
+			logs.Infof("Successfully applied txn with commitIdx %d and segNum %d", nextCommitIdx, logToApply.SeqNum)
 		} else {
-			logs.Warnf("Insufficient Balance for txn with commitIdx %d and segNum %d", nextCommitIdx, logToApply.seqNum)
+			logs.Warnf("Insufficient Balance for txn with commitIdx %d and segNum %d", nextCommitIdx, logToApply.SeqNum)
 		}
 		sm.lastExecutedCommitNum++
-		logToApply.isExecuted = true
-		execChan, ok := sm.executionStatus[logToApply.seqNum]
+		logToApply.IsExecuted = true
+		execChan, ok := sm.executionStatus[logToApply.SeqNum]
 		if ok {
 			execChan <- res
 			close(execChan)
-			delete(sm.executionStatus, logToApply.seqNum)
+			delete(sm.executionStatus, logToApply.SeqNum)
 		}
 
 	}
@@ -451,10 +456,12 @@ func (ls *LogStore) append(record *LogRecord) {
 	defer logs.Debug("Exit")
 
 	ls.lock.Lock()
-	defer ls.lock.Unlock()
-	ls.records[record.seqNum] = record
-	logs.Infof("Added record to log with seqNum %d", record.seqNum)
 
+	ls.records[record.SeqNum] = record
+	logs.Infof("Added record to log with seqNum %d", record.SeqNum)
+	ls.lock.Unlock()
+
+	go ls.marshal()
 }
 
 func (sm *StateMachine) registerSignal(seqNum int) chan bool {
@@ -473,15 +480,17 @@ func (ls *LogStore) markCommitted(seqNum int) {
 	defer logs.Debug("Exit")
 
 	ls.lock.Lock()
-	defer ls.lock.Unlock()
 
 	record, ok := ls.records[seqNum]
 	if ok {
-		record.isCommitted = true
+		record.IsCommitted = true
 		logs.Infof("Log with seqNum %d commited", seqNum)
 	} else {
 		logs.Warnf("No record found with seqNum: %d", seqNum)
 	}
+	ls.lock.Unlock()
+
+	go ls.marshal()
 }
 
 func (sm *StateMachine) applyTxn() {
@@ -514,13 +523,13 @@ func (s *ServerImpl) PrintLog(ctx context.Context, in *api.Blank) (*api.Logs, er
 	for _, seqNum := range keys {
 		record := logStore.records[seqNum]
 		entry := &api.LogRecord{
-			SeqNum:      int32(record.seqNum),
-			BallotVal:   int32(record.ballot.ballotVal),
-			ServerId:    int32(record.ballot.serverID),
-			Sender:      record.txn.sender,
-			Receiver:    record.txn.reciever,
-			Amount:      int32(record.txn.amount),
-			IsCommitted: record.isCommitted,
+			SeqNum:      int32(record.SeqNum),
+			BallotVal:   int32(record.Ballot.BallotVal),
+			ServerId:    int32(record.Ballot.ServerID),
+			Sender:      record.Txn.Sender,
+			Receiver:    record.Txn.Reciever,
+			Amount:      int32(record.Txn.Amount),
+			IsCommitted: record.IsCommitted,
 		}
 		entries = append(entries, entry)
 	}
@@ -553,10 +562,10 @@ func (s *ServerImpl) PrintStatus(ctx context.Context, in *api.RequestInfo) (*api
 	if !ok {
 		return &api.Status{Status: api.TxnState_NOSTATUS}, nil
 	}
-	if record.isExecuted {
+	if record.IsExecuted {
 		return &api.Status{Status: api.TxnState_EXECUTED}, nil
 	}
-	if record.isCommitted {
+	if record.IsCommitted {
 		return &api.Status{Status: api.TxnState_COMMITTED}, nil
 	}
 	return &api.Status{Status: api.TxnState_ACCEPTED}, nil
@@ -610,12 +619,12 @@ func (pm *PeerManager) broadcastAccept(quoram int, record *LogRecord, timestamp 
 	var acceptedVotes int32 = 1
 	qourumChan := make(chan bool, 1)
 	apiRecord := &api.LogRecord{
-		SeqNum:    int32(record.seqNum),
-		BallotVal: int32(record.ballot.ballotVal),
-		ServerId:  int32(record.ballot.serverID),
-		Sender:    record.txn.sender,
-		Receiver:  record.txn.reciever,
-		Amount:    int32(record.txn.amount),
+		SeqNum:    int32(record.SeqNum),
+		BallotVal: int32(record.Ballot.BallotVal),
+		ServerId:  int32(record.Ballot.ServerID),
+		Sender:    record.Txn.Sender,
+		Receiver:  record.Txn.Reciever,
+		Amount:    int32(record.Txn.Amount),
 		Timestamp: timestamp,
 	}
 
@@ -644,10 +653,10 @@ func (pm *PeerManager) broadcastAccept(quoram int, record *LogRecord, timestamp 
 
 	select {
 	case <-qourumChan:
-		logs.Infof("Qouram achieved for seqNum %d", record.seqNum)
+		logs.Infof("Qouram achieved for seqNum %d", record.SeqNum)
 		return true
 	case <-time.After(constants.REQUEST_TIMEOUT * time.Second):
-		logs.Warnf("Quorum not achieved for seqNum %d. Timed out. Recieved voted %d, needed %d", record.seqNum, acceptedVotes, quoram)
+		logs.Warnf("Quorum not achieved for seqNum %d. Timed out. Recieved voted %d, needed %d", record.SeqNum, acceptedVotes, quoram)
 		return false
 	}
 
@@ -658,12 +667,12 @@ func (pm *PeerManager) broadcastCommit(record *LogRecord) {
 	defer logs.Debug("Exit")
 
 	apiRecord := &api.LogRecord{
-		SeqNum:    int32(record.seqNum),
-		BallotVal: int32(record.ballot.ballotVal),
-		ServerId:  int32(record.ballot.serverID),
-		Sender:    record.txn.sender,
-		Receiver:  record.txn.reciever,
-		Amount:    int32(record.txn.amount),
+		SeqNum:    int32(record.SeqNum),
+		BallotVal: int32(record.Ballot.BallotVal),
+		ServerId:  int32(record.Ballot.ServerID),
+		Sender:    record.Txn.Sender,
+		Receiver:  record.Txn.Reciever,
+		Amount:    int32(record.Txn.Amount),
 	}
 
 	for _, peer := range pm.peers {
@@ -699,16 +708,16 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 		}
 	}
 
-	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
-		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+	if in.BallotVal < int32(s.leaderBallot.BallotVal) {
+		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.BallotVal, s.leaderBallot.ServerID)
 		s.lock.Unlock()
 		return &api.AcceptResp{Success: false}, nil
-	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
-		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+	} else if in.BallotVal == int32(s.leaderBallot.BallotVal) && in.ServerId < int32(s.leaderBallot.ServerID) {
+		logs.Warnf("Recieved Accept for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.BallotVal, s.leaderBallot.ServerID)
 		s.lock.Unlock()
 		return &api.AcceptResp{Success: false}, nil
 	}
-	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
+	s.ballot = &BallotNumber{BallotVal: int(in.BallotVal), ServerID: s.id}
 	s.lock.Unlock()
 	if in.Sender == "HEARTBEAT" {
 		return &api.AcceptResp{Success: true}, nil
@@ -719,7 +728,7 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 
 	seqNum := int(in.GetSeqNum())
 	if existingRecord, ok := logStore.records[seqNum]; ok {
-		if existingRecord.isCommitted || existingRecord.isExecuted {
+		if existingRecord.IsCommitted || existingRecord.IsExecuted {
 			logs.Infof("Accept for seq #%d already committed/executed, ignoring.", seqNum)
 			logStore.lock.Unlock()
 			return &api.AcceptResp{Success: true}, nil
@@ -728,14 +737,14 @@ func (s *ServerImpl) Accept(ctx context.Context, in *api.LogRecord) (*api.Accept
 	logStore.lock.Unlock()
 
 	record := &LogRecord{
-		seqNum: int(in.SeqNum), // What if it over writes server's some log???? *TODO* Check for consistency
-		ballot: &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)},
-		txn: &ClientRequestTxn{
-			sender:   in.Sender,
-			reciever: in.Receiver,
-			amount:   int(in.Amount),
+		SeqNum: int(in.SeqNum), // What if it over writes server's some log???? *TODO* Check for consistency
+		Ballot: &BallotNumber{BallotVal: int(in.BallotVal), ServerID: int(in.ServerId)},
+		Txn: &ClientRequestTxn{
+			Sender:   in.Sender,
+			Reciever: in.Receiver,
+			Amount:   int(in.Amount),
 		},
-		isCommitted: false,
+		IsCommitted: false,
 	}
 	// **Check** Do I need to add to log or just add  the commited log??????
 	logStore.append(record)
@@ -762,16 +771,16 @@ func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank,
 		default:
 		}
 	}
-	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
-		logs.Warnf("Recieved Commit for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+	if in.BallotVal < int32(s.leaderBallot.BallotVal) {
+		logs.Warnf("Recieved Commit for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.BallotVal, s.leaderBallot.ServerID)
 		s.lock.Unlock()
 		return &api.Blank{}, nil
-	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
-		logs.Warnf("Recieved Commit for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+	} else if in.BallotVal == int32(s.leaderBallot.BallotVal) && in.ServerId < int32(s.leaderBallot.ServerID) {
+		logs.Warnf("Recieved Commit for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.BallotVal, s.leaderBallot.ServerID)
 		s.lock.Unlock()
 		return &api.Blank{}, nil
 	}
-	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
+	s.ballot = &BallotNumber{BallotVal: int(in.BallotVal), ServerID: s.id}
 	s.lock.Unlock()
 	// Note: in runs/Commit_Before_Accept we recieved a commit message before the accept message. current
 	// hangling leaves a permanent hole that can't be repaired until a new-view message that makes this node faulty
@@ -781,7 +790,7 @@ func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank,
 
 	seqNum := int(in.GetSeqNum())
 	record, ok := logStore.records[seqNum]
-	if ok && (record.isCommitted || record.isExecuted) {
+	if ok && (record.IsCommitted || record.IsExecuted) {
 		logs.Infof("Commit for seq #%d already processed, ignoring.", seqNum)
 		logStore.lock.Unlock()
 		sm.applyTxn()
@@ -793,17 +802,17 @@ func (s *ServerImpl) Commit(ctx context.Context, in *api.LogRecord) (*api.Blank,
 		// Since a Commit proves quorum was met, we can safely create the entry.
 		logs.Warnf("Commit received for seqNum #%d before Accept. Creating log entry.", seqNum)
 		record = &LogRecord{
-			seqNum: seqNum,
-			ballot: &BallotNumber{ballotVal: int(in.BallotVal), serverID: int(in.ServerId)},
-			txn: &ClientRequestTxn{
-				sender:   in.Sender,
-				reciever: in.Receiver,
-				amount:   int(in.Amount),
+			SeqNum: seqNum,
+			Ballot: &BallotNumber{BallotVal: int(in.BallotVal), ServerID: int(in.ServerId)},
+			Txn: &ClientRequestTxn{
+				Sender:   in.Sender,
+				Reciever: in.Receiver,
+				Amount:   int(in.Amount),
 			},
 		}
 		logStore.records[seqNum] = record
 	}
-	record.isCommitted = true
+	record.IsCommitted = true
 	logStore.lock.Unlock()
 
 	sm.applyTxn()
@@ -878,10 +887,10 @@ func (s *ServerImpl) startElection() {
 	}
 
 	s.state = constants.Candidate
-	newBallotVal := max(s.leaderBallot.ballotVal, s.ballot.ballotVal)
-	s.ballot.ballotVal = newBallotVal + 1
+	newBallotVal := max(s.leaderBallot.BallotVal, s.ballot.BallotVal)
+	s.ballot.BallotVal = newBallotVal + 1
 	prepareReq := api.PrepareReq{
-		BallotVal: int32(s.ballot.ballotVal),
+		BallotVal: int32(s.ballot.BallotVal),
 		ServerId:  int32(s.id),
 	}
 	s.lock.Unlock()
@@ -914,13 +923,13 @@ func (s *ServerImpl) startElection() {
 	logStore.lock.Lock()
 	for _, record := range logStore.records {
 		promiseLogs = append(promiseLogs, &api.LogRecord{
-			SeqNum:      int32(record.seqNum),
-			BallotVal:   int32(record.ballot.ballotVal),
-			ServerId:    int32(record.ballot.serverID),
-			Sender:      record.txn.sender,
-			Receiver:    record.txn.reciever,
-			Amount:      int32(record.txn.amount),
-			IsCommitted: record.isCommitted,
+			SeqNum:      int32(record.SeqNum),
+			BallotVal:   int32(record.Ballot.BallotVal),
+			ServerId:    int32(record.Ballot.ServerID),
+			Sender:      record.Txn.Sender,
+			Receiver:    record.Txn.Reciever,
+			Amount:      int32(record.Txn.Amount),
+			IsCommitted: record.IsCommitted,
 		})
 	}
 	logStore.lock.Unlock()
@@ -989,15 +998,15 @@ func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.Prom
 		s.pendingMax = in
 	}
 
-	if (inBallot > int32(s.ballot.ballotVal) || (inBallot == int32(s.ballot.ballotVal) && inServerID > int32(s.ballot.serverID))) && (s.pendingMax != nil && inBallot == s.pendingMax.GetBallotVal() && inServerID == s.pendingMax.GetServerId()) {
+	if (inBallot > int32(s.ballot.BallotVal) || (inBallot == int32(s.ballot.BallotVal) && inServerID > int32(s.ballot.ServerID))) && (s.pendingMax != nil && inBallot == s.pendingMax.GetBallotVal() && inServerID == s.pendingMax.GetServerId()) {
 		logs.Infof("Promising for ballot <%d, %d>", inBallot, inServerID)
-		s.ballot.ballotVal = int(inBallot)
-		s.ballot.serverID = int(inServerID)
+		s.ballot.BallotVal = int(inBallot)
+		s.ballot.ServerID = int(inServerID)
 		s.state = constants.Follower
 		s.isPromised = true
 
-		s.leaderBallot.ballotVal = int(inBallot)
-		s.leaderBallot.serverID = int(inServerID)
+		s.leaderBallot.BallotVal = int(inBallot)
+		s.leaderBallot.ServerID = int(inServerID)
 
 		select {
 		case s.leaderPulse <- true:
@@ -1008,13 +1017,13 @@ func (s *ServerImpl) Prepare(ctx context.Context, in *api.PrepareReq) (*api.Prom
 		acceptedLog := make([]*api.LogRecord, 0)
 		for _, record := range logStore.records {
 			acceptedLog = append(acceptedLog, &api.LogRecord{
-				SeqNum:      int32(record.seqNum),
-				BallotVal:   int32(record.ballot.ballotVal),
-				ServerId:    int32(record.ballot.serverID),
-				Sender:      record.txn.sender,
-				Receiver:    record.txn.reciever,
-				Amount:      int32(record.txn.amount),
-				IsCommitted: record.isCommitted,
+				SeqNum:      int32(record.SeqNum),
+				BallotVal:   int32(record.Ballot.BallotVal),
+				ServerId:    int32(record.Ballot.ServerID),
+				Sender:      record.Txn.Sender,
+				Receiver:    record.Txn.Reciever,
+				Amount:      int32(record.Txn.Amount),
+				IsCommitted: record.IsCommitted,
 			})
 		}
 		logStore.lock.Unlock()
@@ -1043,8 +1052,8 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.state = constants.Leader
-	s.leaderBallot.ballotVal = int(ballotVal)
-	s.leaderBallot.serverID = int(s.id)
+	s.leaderBallot.BallotVal = int(ballotVal)
+	s.leaderBallot.ServerID = int(s.id)
 
 	logMap := make(map[int32]*api.LogRecord)
 	maxSeq := int32(0)
@@ -1124,7 +1133,7 @@ func (s *ServerImpl) becomeLeader(ballotVal int, promiseLogs []*api.LogRecord) {
 	logStore.lock.Lock()
 
 	for _, rec := range logStore.records {
-		rec.ballot = &BallotNumber{ballotVal: ballotVal, serverID: s.id}
+		rec.Ballot = &BallotNumber{BallotVal: ballotVal, ServerID: s.id}
 
 	}
 
@@ -1169,7 +1178,7 @@ func (s *ServerImpl) redoConsensus() {
 				}
 
 			}
-			logStore.markCommitted(rec.seqNum)
+			logStore.markCommitted(rec.SeqNum)
 			sm.applyTxn()
 			s.peerManager.broadcastCommit(rec)
 		}(quorum, rec)
@@ -1187,16 +1196,16 @@ func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blan
 
 	s.lock.Lock()
 	defer s.lock.Unlock()
-	if in.BallotVal < int32(s.leaderBallot.ballotVal) {
-		logs.Warnf("Recieved New-View for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+	if in.BallotVal < int32(s.leaderBallot.BallotVal) {
+		logs.Warnf("Recieved New-View for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.BallotVal, s.leaderBallot.ServerID)
 		return &api.Blank{}, nil
-	} else if in.BallotVal == int32(s.leaderBallot.ballotVal) && in.ServerId < int32(s.leaderBallot.serverID) {
-		logs.Warnf("Recieved View for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.ballotVal, s.leaderBallot.serverID)
+	} else if in.BallotVal == int32(s.leaderBallot.BallotVal) && in.ServerId < int32(s.leaderBallot.ServerID) {
+		logs.Warnf("Recieved View for <%d,, %d> but current Highest ballot is <%d, %d>", in.GetBallotVal(), in.GetServerId(), s.leaderBallot.BallotVal, s.leaderBallot.ServerID)
 		return &api.Blank{}, nil
 	}
-	s.ballot = &BallotNumber{ballotVal: int(in.BallotVal), serverID: s.id}
-	s.leaderBallot.ballotVal = int(in.BallotVal)
-	s.leaderBallot.serverID = int(in.ServerId)
+	s.ballot = &BallotNumber{BallotVal: int(in.BallotVal), ServerID: s.id}
+	s.leaderBallot.BallotVal = int(in.BallotVal)
+	s.leaderBallot.ServerID = int(in.ServerId)
 	s.state = constants.Follower
 	s.viewLog = append(s.viewLog, in)
 	select {
@@ -1209,25 +1218,25 @@ func (s *ServerImpl) NewView(ctx context.Context, in *api.NewViewReq) (*api.Blan
 	for _, newRecord := range in.GetAcceptLog() {
 		seqNum := int(newRecord.GetSeqNum())
 		if rec, ok := logStore.records[seqNum]; ok {
-			if rec.isExecuted || rec.isCommitted {
-				rec.ballot = &BallotNumber{ballotVal: int(newRecord.GetBallotVal()), serverID: int(newRecord.GetServerId())}
+			if rec.IsExecuted || rec.IsCommitted {
+				rec.Ballot = &BallotNumber{BallotVal: int(newRecord.GetBallotVal()), ServerID: int(newRecord.GetServerId())}
 				continue
 			}
 		}
 		logStore.records[int(newRecord.GetSeqNum())] = &LogRecord{
-			seqNum: int(newRecord.GetSeqNum()),
+			SeqNum: int(newRecord.GetSeqNum()),
 
-			ballot: &BallotNumber{ballotVal: int(newRecord.GetBallotVal()), serverID: int(newRecord.GetServerId())},
-			txn: &ClientRequestTxn{
-				sender:   newRecord.GetSender(),
-				reciever: newRecord.GetReceiver(),
-				amount:   int(newRecord.GetAmount()),
+			Ballot: &BallotNumber{BallotVal: int(newRecord.GetBallotVal()), ServerID: int(newRecord.GetServerId())},
+			Txn: &ClientRequestTxn{
+				Sender:   newRecord.GetSender(),
+				Reciever: newRecord.GetReceiver(),
+				Amount:   int(newRecord.GetAmount()),
 			},
-			isCommitted: false,
-			isExecuted:  false,
+			IsCommitted: false,
+			IsExecuted:  false,
 		}
 	}
-
+	go logStore.marshal()
 	return &api.Blank{}, nil
 }
 
@@ -1309,7 +1318,7 @@ func (s *ServerImpl) startHeartbeat() {
 		isLeader := s.state == constants.Leader
 		if isLeader {
 			heartbeatMsg := &api.LogRecord{
-				BallotVal: int32(s.ballot.ballotVal),
+				BallotVal: int32(s.ballot.BallotVal),
 				ServerId:  int32(s.id),
 				Sender:    "HEARTBEAT",
 			}
@@ -1327,3 +1336,128 @@ func (s *ServerImpl) startHeartbeat() {
 		}
 	}
 }
+
+func (ls *LogStore) marshal() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	ls.lock.Lock()
+	recordsCopy := make(map[int]*LogRecord, len(ls.records))
+	maps.Copy(recordsCopy, ls.records)
+	ls.lock.Unlock()
+
+	data, err := json.MarshalIndent(recordsCopy, "", "  ")
+	if err != nil {
+		logs.Warnf("Failed to marshal log store: %v", err)
+		return
+	}
+
+	filePath := ls.logsPath
+	err = os.WriteFile(filePath, data, 0644)
+	if err != nil {
+		logs.Warnf("Failed to write log store to file %s: %v", filePath, err)
+	}
+}
+
+func (ls *LogStore) unmarshal() {
+
+	logs.Debug("enter")
+	defer logs.Debug("Exit")
+
+	filePath := ls.logsPath
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		logs.Infof("Log file %s not found, starting with an empty log store.", filePath)
+		return
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		logs.Warnf("Failed to read log file %s: %v", filePath, err)
+		return
+	}
+
+	if len(data) == 0 {
+		logs.Infof("Log file %s is empty, starting with an empty log store.", filePath)
+		return
+	}
+
+	ls.lock.Lock()
+	defer ls.lock.Unlock()
+
+	var records map[int]*LogRecord
+	err = json.Unmarshal(data, &records)
+	if err != nil {
+		logs.Warnf("Failed to unmarshal log data from %s: %v", filePath, err)
+		return
+	}
+
+	maxSeq := 0
+	for seq, record := range records {
+		record.IsCommitted = false
+		record.IsExecuted = false
+		if seq > maxSeq {
+			maxSeq = seq
+		}
+	}
+	ls.records = records
+	if server != nil {
+		server.seqNum = maxSeq
+	}
+	logs.Infof("Successfully loaded %d records from log file %s. Max seqNum set to %d.", len(ls.records), filePath, maxSeq)
+}
+
+// func (sm *StateMachine) marshalSnapshot() {
+// 	sm.lock.Lock()
+// 	snapshot := SnapshotData{
+// 		LastIncludedIndex: sm.lastExecutedCommitNum,
+// 		Vault:             make(map[string]int),
+// 	}
+// 	for k, v := range sm.vault {
+// 		snapshot.Vault[k] = v
+// 	}
+// 	sm.lock.Unlock()
+
+// 	data, err := json.MarshalIndent(snapshot, "", "  ")
+// 	if err != nil {
+// 		logs.Warnf("Failed to marshal snapshot: %v", err)
+// 		return
+// 	}
+
+// 	filePath := sm.snapshotPath
+// 	if err := os.WriteFile(filePath, data, 0644); err != nil {
+// 		logs.Warnf("Failed to write snapshot to file %s: %v", filePath, err)
+// 	}
+// }
+
+// func (sm *StateMachine) unmarshalSnapshot() {
+
+// 	logs.Debug("Enter")
+// 	defer logs.Debug("Exit")
+
+// 	filePath := sm.snapshotPath
+// 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+// 		logs.Infof("Snapshot file %s not found, starting with initial state.", filePath)
+// 		return
+// 	}
+
+// 	data, err := os.ReadFile(filePath)
+// 	if err != nil {
+// 		logs.Warnf("Failed to read snapshot file %s: %v", filePath, err)
+// 		return
+// 	}
+// 	if len(data) == 0 {
+// 		return
+// 	}
+
+// 	sm.lock.Lock()
+// 	defer sm.lock.Unlock()
+
+// 	var snapshot SnapshotData
+// 	if err := json.Unmarshal(data, &snapshot); err != nil {
+// 		logs.Warnf("Failed to unmarshal snapshot data from %s: %v", filePath, err)
+// 		return
+// 	}
+
+// 	sm.vault = snapshot.Vault
+// 	sm.lastExecutedCommitNum = snapshot.LastIncludedIndex
+// 	logs.Infof("Successfully loaded snapshot from %s. Last included index: %d.", filePath, sm.lastExecutedCommitNum)
+// }
