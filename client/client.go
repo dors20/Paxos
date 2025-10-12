@@ -248,6 +248,8 @@ func runCLI(testSets []TestSet) {
 			}
 		case "all":
 			printAll()
+		case "dball":
+			printDbAll()
 		case "printdb":
 			if len(input) != 2 {
 				fmt.Println("Usage: printdb <server_id>")
@@ -312,7 +314,7 @@ func executeTestSet(ts TestSet) {
 
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
-	recoverServer()
+	recoverServer(ts.LiveNodes)
 
 	logs.Infof("--- Executing Test Set %d ---", ts.SetNumber)
 	logs.Infof("Live nodes for this set: %v", ts.LiveNodes)
@@ -619,6 +621,14 @@ func printAll() {
 	}
 }
 
+func printDbAll() {
+	logs.Debug("Enter")
+	defer logs.Debug("Exit")
+	for id := range sm.servers {
+		printDb(id)
+	}
+}
+
 func printViewAll() {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
@@ -716,12 +726,12 @@ func simulateLeaderFailure(serverId int) {
 	}
 }
 
-func recoverServer() {
+func recoverServer(nodes []int) {
 	logs.Debug("Enter")
 	defer logs.Debug("Exit")
 	var wg sync.WaitGroup
 
-	for id := range sm.servers {
+	for _, id := range nodes {
 		wg.Add(1)
 		go func(serverID int) {
 			defer wg.Done()

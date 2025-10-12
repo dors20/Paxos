@@ -205,7 +205,7 @@ func main() {
 
 	leaderTimeout := constants.LEADER_TIMEOUT_SECONDS * time.Millisecond
 	startServer(serverId, leaderTimeout)
-	logs.Infof("Server-%d is up and running. Waiting for requests on port %s XXXXXXXXXX", serverId, server.port)
+	logs.Infof("Server-%d is up and running. Waiting for requests on port %s", serverId, server.port)
 
 	// Starting grpc server
 	addr := fmt.Sprintf(":%s", server.port)
