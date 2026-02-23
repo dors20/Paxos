@@ -1,6 +1,6 @@
 # Paxos
 
-A Go implementation of a **Stable-Leader Paxos** variant with a distributed banking application on top. Built for CSE 535 Distributed Systems (Project 1).
+A Go implementation of a **Stable-Leader Paxos** variant with a distributed banking application on top.
 
 ## Overview
 
@@ -76,7 +76,6 @@ These cover: startup leader election, full and partial node sets, backup and lea
 ## References
 
 - Leslie Lamport, *Paxos made simple*, ACM SIGACT News, 32(4):18–25, 2001.
-- CSE 535 F25 Project 1 handout (see `CSE535_F25_Project1.pdf`).
 
 ## License
 
